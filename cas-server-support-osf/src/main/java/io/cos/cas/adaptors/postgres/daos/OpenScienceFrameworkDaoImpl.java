@@ -120,7 +120,7 @@ public class OpenScienceFrameworkDaoImpl implements OpenScienceFrameworkDao {
     public OpenScienceFrameworkUser findOneUserByEmail(final String address) {
 
         // check ePPN first
-        final OpenScienceFrameworkUser user = findOneUserByEPPN(address);
+        OpenScienceFrameworkUser user = findOneUserByEPPN(address);
         if (user != null) {
             return user;
         }
