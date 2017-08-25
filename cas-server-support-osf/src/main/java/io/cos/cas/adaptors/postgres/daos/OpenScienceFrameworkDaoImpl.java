@@ -126,7 +126,7 @@ public class OpenScienceFrameworkDaoImpl implements OpenScienceFrameworkDao {
         }
 
         // check username (primary email)
-        OpenScienceFrameworkUser user = findOneUserByUsername(address);
+        user = findOneUserByUsername(address);
         if (user != null) {
             return user;
         }
