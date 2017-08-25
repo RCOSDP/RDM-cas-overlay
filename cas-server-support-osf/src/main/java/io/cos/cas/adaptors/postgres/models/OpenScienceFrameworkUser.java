@@ -47,6 +47,9 @@ public final class OpenScienceFrameworkUser {
     @Column(name = "username", nullable = false)
     private String username;
 
+    @Column(name = "eppn", nullable = true)
+    private String eppn;
+
     @Column(name = "password", nullable = false)
     private String password;
 
@@ -86,6 +89,10 @@ public final class OpenScienceFrameworkUser {
 
     public String getUsername() {
         return username;
+    }
+
+    public String getEPPN() {
+        return eppn;
     }
 
     public String getPassword() {
