@@ -193,9 +193,9 @@ public class OpenScienceFrameworkCredential extends RememberMeUsernamePasswordCr
     public String toString() {
         String representation = super.toString();
 
-        if (this.remotePrincipal) {
-            representation += REMOTE_PRINCIPAL_SUFFIX;
-        }
+        //if (this.remotePrincipal) {
+        //    representation += REMOTE_PRINCIPAL_SUFFIX;
+        //}
         if (this.verificationKey != null) {
             representation += VERIFICATION_KEY_SUFFIX;
         }
