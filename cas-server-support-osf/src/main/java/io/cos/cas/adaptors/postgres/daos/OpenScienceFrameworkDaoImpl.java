@@ -125,14 +125,16 @@ public class OpenScienceFrameworkDaoImpl implements OpenScienceFrameworkDao {
             return user;
         }
 
+	final String address_lowercase = address.toLowerCase();
+
         // check username (primary email)
-        user = findOneUserByUsername(address);
+        user = findOneUserByUsername(address_lowercase);
         if (user != null) {
             return user;
         }
 
         // check osf email
-        final OpenScienceFrameworkEmail email = findOneEmailByAddress(address);
+        final OpenScienceFrameworkEmail email = findOneEmailByAddress(address_lowercase);
         return email != null ? email.getUser() : null;
     }
 
