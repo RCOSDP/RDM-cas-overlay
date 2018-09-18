@@ -1,8 +1,7 @@
 # Center for Open Science CAS Overlay
 
-`Master` Build Status: [![Build Status](https://travis-ci.org/CenterForOpenScience/cas-overlay.svg?branch=master)](https://travis-ci.org/CenterForOpenScience/cas-overlay)
-
-`Develop` Build Status: [![Build Status](https://travis-ci.org/CenterForOpenScience/cas-overlay.svg?branch=develop)](https://travis-ci.org/CenterForOpenScience/cas-overlay)
+`Master` Build Status: [![Build Status](https://travis-ci.org/RCOSDP/RDM-modular-file-renderer.svg?branch=master)](https://travis-ci.org/RCOSDP/RDM-modular-file-renderer)
+`Develop` Build Status: [![Build Status](https://travis-ci.org/RCOSDP/RDM-modular-file-renderer.svg?branch=develop)](https://travis-ci.org/RCOSDP/RDM-modular-file-renderer)
 
 Official Docs can be found [here](https://jasig.github.io/cas/)
 
