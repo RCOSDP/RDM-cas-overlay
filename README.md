@@ -1,8 +1,8 @@
-# Center for Open Science CAS Overlay
+# GakuNin RDM CAS Overlay
 
-`Master` Build Status: [![Build Status](https://travis-ci.org/CenterForOpenScience/cas-overlay.svg?branch=master)](https://travis-ci.org/CenterForOpenScience/cas-overlay)
+`Master` Build Status: [![Build Status](https://travis-ci.org/RCOSDP/RDM-cas-overlay.svg?branch=master)](https://travis-ci.org/RCOSDP/RDM-cas-overlay)
 
-`Develop` Build Status: [![Build Status](https://travis-ci.org/CenterForOpenScience/cas-overlay.svg?branch=develop)](https://travis-ci.org/CenterForOpenScience/cas-overlay)
+`Develop` Build Status: [![Build Status](https://travis-ci.org/RCOSDP/RDM-cas-overlay.svg?branch=develop)](https://travis-ci.org/RCOSDP/RDM-cas-overlay)
 
 Official Docs can be found [here](https://jasig.github.io/cas/)
 
