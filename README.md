@@ -1,7 +1,7 @@
-### GakuNin RDM CAS Overlay
+# GakuNin RDM CAS Overlay
 
-### Center for Open Science CAS Overlay
-### GakuNin CAS Overlay is developed by forking [Center for Open Science CAS Overlay](https://github.com/CenterForOpenScience/cas-overlay)
+#### GakuNin CAS Overlay is developed by forking [Center for Open Science CAS Overlay](https://github.com/CenterForOpenScience/cas-overlay)
+
 
 `Master` Build Status: [![Build Status](https://travis-ci.org/RCOSDP/RDM-cas-overlay.svg?branch=Master)](https://travis-ci.org/RCOSDP/RDM-cas-overlay)
 
