@@ -1,8 +1,20 @@
 # GakuNin RDM CAS Overlay
 
-`Master` Build Status: [![Build Status](https://travis-ci.org/RCOSDP/RDM-cas-overlay.svg?branch=master)](https://travis-ci.org/RCOSDP/RDM-cas-overlay)
 
-`Develop` Build Status: [![Build Status](https://travis-ci.org/RCOSDP/RDM-cas-overlay.svg?branch=develop)](https://travis-ci.org/RCOSDP/RDM-cas-overlay)
+#### GakuNin CAS Overlay is developed by forking [Center for Open Science CAS Overlay](https://github.com/CenterForOpenScience/cas-overlay)
+
+
+`Master` Build Status: [![Build Status](https://travis-ci.org/RCOSDP/RDM-cas-overlay.svg?branch=Master)](https://travis-ci.org/RCOSDP/RDM-cas-overlay)
+
+`Develop` Build Status: [![Build Status](https://travis-ci.org/RCOSDP/RDM-cas-overlay.svg?branch=Develop)](https://travis-ci.org/RCOSDP/RDM-cas-overlay)
+
+`nii-mergework-201802` Build Status: [![Build Status](https://travis-ci.org/RCOSDP/RDM-cas-overlay.svg?branch=nii-mergework-201802)](https://travis-ci.org/RCOSDP/RDM-cas-overlay)
+
+`master`[![Coverage Status](https://coveralls.io/repos/github/RCOSDP/RDM-cas-overlay/badge.svg?branch=master)](https://coveralls.io/github/RCOSDP/RDM-cas-overlay?branch=master)
+
+`develop`[![Coverage Status](https://coveralls.io/repos/github/RCOSDP/RDM-cas-overlay/badge.svg?branch=develop)](https://coveralls.io/github/RCOSDP/RDM-cas-overlay?branch=develop)
+
+`nii-mergework-201802`[![Coverage Status](https://coveralls.io/repos/github/RCOSDP/RDM-cas-overlay/badge.svg?branch=nii-mergework-201802)](https://coveralls.io/github/RCOSDP/RDM-cas-overlay?branch=nii-mergework-201802)
 
 Official Docs can be found [here](https://jasig.github.io/cas/)
 
