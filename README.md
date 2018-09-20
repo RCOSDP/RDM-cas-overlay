@@ -1,6 +1,5 @@
 # GakuNin RDM CAS Overlay
 
-
 #### GakuNin CAS Overlay is developed by forking [Center for Open Science CAS Overlay](https://github.com/CenterForOpenScience/cas-overlay)
 
 
