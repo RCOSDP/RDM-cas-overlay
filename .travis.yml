@@ -38,3 +38,5 @@ script:
 branches:
   except:
     - /^NII_/
+after_success:
+  coveralls
