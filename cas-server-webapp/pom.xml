@@ -90,6 +90,11 @@
                             <excludes>
                                 <exclude>WEB-INF/cas.properties</exclude>
                                 <exclude>WEB-INF/classes/log4j2.xml</exclude>
+                                <exclude>WEB-INF/lib/log4j-api-2.3.jar</exclude>
+                                <exclude>WEB-INF/lib/log4j-core-2.3.jar</exclude>
+                                <exclude>WEB-INF/lib/log4j-jcl-2.3.jar</exclude>
+                                <exclude>WEB-INF/lib/log4j-slf4j-impl-2.3.jar</exclude>
+                                <exclude>WEB-INF/lib/log4j-web-2.3.jar</exclude>
                             </excludes>
                         </overlay>
                     </overlays>
