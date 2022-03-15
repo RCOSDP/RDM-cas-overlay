@@ -31,6 +31,7 @@ import com.nimbusds.jwt.SignedJWT;
 
 import io.cos.cas.adaptors.postgres.types.DelegationProtocol;
 import io.cos.cas.authentication.exceptions.DelegatedLoginException;
+import io.cos.cas.authentication.exceptions.InstitutionLoginAvailabilityException;
 import io.cos.cas.authentication.exceptions.InstitutionLoginFailedAttributesMissingException;
 import io.cos.cas.authentication.exceptions.InstitutionLoginFailedAttributesParsingException;
 import io.cos.cas.authentication.exceptions.InstitutionLoginFailedOsfApiException;
@@ -56,8 +57,9 @@ import org.jasig.cas.ticket.ServiceTicket;
 import org.jasig.cas.ticket.TicketException;
 import org.jasig.cas.ticket.TicketGrantingTicket;
 import org.jasig.cas.web.support.WebUtils;
-
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.json.XML;
 
 import org.pac4j.oauth.client.OrcidClient;
@@ -91,13 +93,17 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -189,6 +195,9 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
 
     @NotNull
     private String institutionsAuthXslLocation;
+
+    @NotNull
+    private String institutionsLoginAvailability;
 
     private Transformer institutionsAuthTransformer;
 
@@ -573,6 +582,43 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
             logger.error("[CAS XSLT] Missing names: username={}, institution={}", username, institutionId);
             throw new InstitutionLoginFailedAttributesMissingException("Missing user's names");
         }
+
+        // Call Login Availability API
+        final String entitlement = user.optString("entitlement").trim();
+        if (!StringUtils.isEmpty(entitlement)) {
+            // send post method to RDM API
+            JSONObject bodyObj = new JSONObject();
+            bodyObj.append("institutionId", institutionId);
+            bodyObj.append("entitlements", getEntitlements(entitlement));
+
+            HttpResponse httpResponse;
+            try {
+                httpResponse = Request.Post(this.institutionsLoginAvailability)
+                        .addHeader(new BasicHeader("Content-Type", "text/plain"))
+                        .bodyString(bodyObj.toString(), ContentType.APPLICATION_JSON)
+                        .execute()
+                        .returnResponse();
+                BufferedReader bf = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
+                String bodyData = "";
+                StringBuilder builder = new StringBuilder();
+                while ((bodyData = bf.readLine()) != null) {
+                    builder.append(bodyData);
+                }
+                JSONObject json = new JSONObject(builder.toString());
+                boolean isLoginAvailability = (Boolean) json.get("login_availability");
+                if (!isLoginAvailability) {
+                    throw new InstitutionLoginAvailabilityException();
+                }
+            } catch (IOException e) {
+                logger.error(
+                        "[OSF API] Notify Remote Principal Authenticated Failed: Communication Error - {}",
+                        e.getMessage()
+                );
+                throw new InstitutionLoginFailedOsfApiException("Communication Error between OSF CAS and OSF API");
+            }
+
+        }
+
         final String payload = normalizedPayload.toString();
         logger.info("[CAS XSLT] All attributes checked: username={}, institution={}", username, institutionId);
         logger.debug(
@@ -645,6 +691,40 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
     }
 
     /**
+     * Gets the entitlements.
+     *
+     * @param entitlement the entitlement
+     * @return the entitlements
+     */
+    private List<String> getEntitlements(final String entitlement) {
+        List<String> entitlements = new ArrayList<String>();
+        Object jsonObj = new JSONTokener(entitlement).nextValue();
+        if (jsonObj instanceof JSONObject) {
+            getEduPersonEntitleMent(entitlements, jsonObj);
+        } else if (jsonObj instanceof JSONArray) {
+            JSONArray jsonArray = (JSONArray) jsonObj;
+            for (int i = 0; i < jsonArray.length(); i++) {
+                getEduPersonEntitleMent(entitlements, jsonArray.getJSONObject(i));
+            }
+        }
+        return entitlements;
+    }
+
+    /**
+     * Gets the edu person entitle ment.
+     *
+     * @param entitlements the entitlements
+     * @param jsonObj the json obj
+     * @return the edu person entitle ment
+     */
+    private void getEduPersonEntitleMent(List<String> entitlements, Object jsonObj) {
+        String eduPersonEntitlement = ((JSONObject) jsonObj).getString("eduPersonEntitlement");
+        if (!StringUtils.isEmpty(eduPersonEntitlement)) {
+            entitlements.addAll(Arrays.asList(eduPersonEntitlement.split(";")));
+        }
+    }
+
+    /**
      * Normalize the Remote Principal credential.
      *
      * @param credential the credential object bearing the username, password, etc...
@@ -699,6 +779,10 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
 
     public void setInstitutionsAuthXslLocation(final String institutionsAuthXslLocation) {
         this.institutionsAuthXslLocation = institutionsAuthXslLocation;
+    }
+
+    public void setInstitutionsLoginAvailability(final String institutionsLoginAvailability) {
+        this.institutionsLoginAvailability = institutionsLoginAvailability;
     }
 
     public CentralAuthenticationService getCentralAuthenticationService() {
