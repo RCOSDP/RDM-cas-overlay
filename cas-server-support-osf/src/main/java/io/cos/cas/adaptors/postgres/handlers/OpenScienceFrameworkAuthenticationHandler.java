@@ -15,6 +15,7 @@
  */
 package io.cos.cas.adaptors.postgres.handlers;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -36,11 +37,16 @@ import org.jasig.cas.authentication.Credential;
 import org.jasig.cas.authentication.handler.NoOpPrincipalNameTransformer;
 import org.jasig.cas.authentication.handler.PrincipalNameTransformer;
 import org.jasig.cas.authentication.handler.support.AbstractPreAndPostProcessingAuthenticationHandler;
+import org.jasig.cas.support.oauth.OAuthConstants;
+import org.jasig.cas.web.support.WebUtils;
 import org.jasig.cas.authentication.HandlerResult;
 import org.jasig.cas.authentication.PreventedException;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.util.StringUtils;
+import org.springframework.webflow.execution.RequestContext;
+import org.springframework.webflow.execution.RequestContextHolder;
 
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
@@ -50,6 +56,8 @@ import java.util.Map;
 
 import javax.security.auth.login.AccountNotFoundException;
 import javax.security.auth.login.FailedLoginException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotNull;
 
 
@@ -77,6 +85,9 @@ public class OpenScienceFrameworkAuthenticationHandler extends AbstractPreAndPos
     private static final String USER_STATUS_UNKNOWN = "UNKNOWN";
 
     @NotNull
+    private String osfSettingsUrl;
+
+    @NotNull
     private PrincipalNameTransformer principalNameTransformer = new NoOpPrincipalNameTransformer();
 
     @NotNull
@@ -97,6 +108,10 @@ public class OpenScienceFrameworkAuthenticationHandler extends AbstractPreAndPos
      */
     public void setOpenScienceFrameworkDao(final OpenScienceFrameworkDaoImpl openScienceFrameworkDao) {
         this.openScienceFrameworkDao = openScienceFrameworkDao;
+    }
+
+    public void setOsfSettingsUrl(String osfSettingsUrl) {
+        this.osfSettingsUrl = osfSettingsUrl;
     }
 
     @Override
@@ -201,6 +216,15 @@ public class OpenScienceFrameworkAuthenticationHandler extends AbstractPreAndPos
         } else if (USER_STATUS_UNKNOWN.equals(userStatus)) {
             throw new InvalidUserStatusException(username + " is not active: unknown status");
         }
+
+        // In-case of re-registered user, set settings url to update redirect_uri
+        if (isReRegisteredUser(user)) {
+            RequestContext context = RequestContextHolder.getRequestContext();
+            HttpServletRequest request = WebUtils.getHttpServletRequest(context);
+            HttpSession session = request.getSession();
+            session.setAttribute(OAuthConstants.OSF_SETTINGS_URL, this.osfSettingsUrl);
+        }
+
         final Map<String, Object> attributes = new HashMap<>();
         attributes.put("username", user.getUsername());
         attributes.put("givenName", user.getGivenName());
@@ -210,6 +234,35 @@ public class OpenScienceFrameworkAuthenticationHandler extends AbstractPreAndPos
         // Note: GUID is recommended. Do not use user's pimary key or username.
         final OpenScienceFrameworkGuid guid = openScienceFrameworkDao.findGuidByUser(user);
         return createHandlerResult(credential, this.principalFactory.createPrincipal(guid.getGuid(), attributes), null);
+    }
+
+    /**
+     * Checks if is re registered user.
+     *
+     * @param user the user
+     * @return true, if is re registered user
+     */
+    private boolean isReRegisteredUser(final OpenScienceFrameworkUser user) {
+        String familyName = user.getFamilyName();
+        String familyNameJa = user.getFamilyNameJa();
+        String givenName = user.getGivenName();
+        String givenNameJa = user.getGivenNameJa();
+        JsonArray jobs = user.getJobs();
+        boolean isNotSetInstitution = false;
+
+        if (jobs.size() == 0) {
+            isNotSetInstitution = true;
+        } else {
+            JsonObject job = jobs.get(0).getAsJsonObject();
+            String institution = job.get("institution").getAsString();
+            String institutionJa = job.get("institution_ja").getAsString();
+            if (StringUtils.isEmpty(institution) || StringUtils.isEmpty(institutionJa)) {
+                isNotSetInstitution = true;
+            }
+        }
+
+        return StringUtils.isEmpty(familyName) || StringUtils.isEmpty(familyNameJa) || StringUtils.isEmpty(givenName)
+                || StringUtils.isEmpty(givenNameJa) || isNotSetInstitution;
     }
 
     /**

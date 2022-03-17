@@ -48,7 +48,9 @@
     </bean>
 
     <bean id="openScienceFrameworkAuthenticationHandler" class="io.cos.cas.adaptors.postgres.handlers.OpenScienceFrameworkAuthenticationHandler"
-        p:openScienceFrameworkDao-ref="openScienceFrameworkDao"/>
+        p:openScienceFrameworkDao-ref="openScienceFrameworkDao"
+        p:osfSettingsUrl="${osf.settings.url}"
+    />
 
     <bean id="oAuthAuthenticationHandler" class="org.jasig.cas.support.oauth.authentication.handler.support.OAuthCredentialsAuthenticationHandler" />
 

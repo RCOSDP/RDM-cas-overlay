@@ -15,13 +15,6 @@
  */
 package io.cos.cas.adaptors.postgres.models;
 
-import com.google.gson.JsonObject;
-
-import io.cos.cas.adaptors.postgres.types.PostgresJsonbUserType;
-
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -33,6 +26,16 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+import io.cos.cas.adaptors.postgres.types.PostgresJsonbArrayUserType;
+import io.cos.cas.adaptors.postgres.types.PostgresJsonbUserType;
+
 /**
  * The Open Science Framework User.
  *
@@ -42,7 +45,8 @@ import javax.persistence.TemporalType;
  */
 @Entity
 @Table(name = "osf_osfuser")
-@TypeDef(name = "PostgresJsonb", typeClass = PostgresJsonbUserType.class)
+@TypeDefs({@TypeDef(name = "PostgresJsonb", typeClass = PostgresJsonbUserType.class),
+    @TypeDef(name = "PostgresJsonbArray", typeClass = PostgresJsonbArrayUserType.class)})
 public final class OpenScienceFrameworkUser {
 
     @Id
@@ -85,6 +89,16 @@ public final class OpenScienceFrameworkUser {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_disabled")
     private Date dateDisabled;
+
+    @Column(name = "jobs")
+    @Type(type = "PostgresJsonbArray")
+    private JsonArray jobs;
+
+    @Column(name = "given_name_ja", nullable = false)
+    private String givenNameJa;
+
+    @Column(name = "family_name_ja", nullable = false)
+    private String familyNameJa;
 
     /** Default Constructor. */
     public OpenScienceFrameworkUser() {}
@@ -139,6 +153,18 @@ public final class OpenScienceFrameworkUser {
 
     public Boolean isActive() {
         return isRegistered() && !isMerged() && !isDisabled() && isConfirmed();
+    }
+
+    public JsonArray getJobs() {
+        return jobs;
+    }
+
+    public String getGivenNameJa() {
+        return givenNameJa;
+    }
+
+    public String getFamilyNameJa() {
+        return familyNameJa;
     }
 
     @Override

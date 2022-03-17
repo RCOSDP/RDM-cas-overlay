@@ -270,4 +270,7 @@ public interface OAuthConstants {
 
     /** Error description for failed token revocation. */
     String FAILED_TOKEN_REVOCATION_DESCRIPTION = "Token Revocation Failed";
+
+    /** The osf settings url. */
+    String OSF_SETTINGS_URL = "osfSettingsUrl";
 }

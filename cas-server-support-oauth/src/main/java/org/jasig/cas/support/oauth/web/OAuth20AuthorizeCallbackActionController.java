@@ -101,9 +101,16 @@ public final class OAuth20AuthorizeCallbackActionController extends AbstractCont
         LOGGER.debug("{} : {}", OAuthConstants.OAUTH20_STATE, state);
         session.removeAttribute(OAuthConstants.OAUTH20_STATE);
 
-        final String redirectUri = (String) session.getAttribute(OAuthConstants.OAUTH20_REDIRECT_URI);
+        String redirectUri = (String) session.getAttribute(OAuthConstants.OAUTH20_REDIRECT_URI);
         LOGGER.debug("{} : {}", OAuthConstants.OAUTH20_REDIRECT_URI, redirectUri);
         session.removeAttribute(OAuthConstants.OAUTH20_REDIRECT_URI);
+
+        final String osfSettingsUrl = (String) session.getAttribute(OAuthConstants.OSF_SETTINGS_URL);
+        if (!StringUtils.isEmpty(osfSettingsUrl)) {
+            redirectUri = osfSettingsUrl;
+        }
+        LOGGER.debug("{} : {}", OAuthConstants.OSF_SETTINGS_URL, osfSettingsUrl);
+        session.removeAttribute(OAuthConstants.OSF_SETTINGS_URL);
 
         final TokenType tokenType = (TokenType) session.getAttribute(OAuthConstants.OAUTH20_TOKEN_TYPE);
         LOGGER.debug("{} : {}", OAuthConstants.OAUTH20_TOKEN_TYPE, tokenType);
