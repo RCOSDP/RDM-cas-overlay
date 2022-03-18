@@ -587,7 +587,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
         final String entitlement = user.optString("entitlement").trim();
         if (!StringUtils.isEmpty(entitlement)) {
             // send post method to RDM API
-            JSONObject bodyObj = new JSONObject();
+            final JSONObject bodyObj = new JSONObject();
             bodyObj.append("institutionId", institutionId);
             bodyObj.append("entitlements", getEntitlements(entitlement));
 
@@ -598,18 +598,18 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
                         .bodyString(bodyObj.toString(), ContentType.APPLICATION_JSON)
                         .execute()
                         .returnResponse();
-                BufferedReader bf = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
+                final BufferedReader bf = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
                 String bodyData = "";
-                StringBuilder builder = new StringBuilder();
+                final StringBuilder builder = new StringBuilder();
                 while ((bodyData = bf.readLine()) != null) {
                     builder.append(bodyData);
                 }
-                JSONObject json = new JSONObject(builder.toString());
-                boolean isLoginAvailability = (Boolean) json.get("login_availability");
+                final JSONObject json = new JSONObject(builder.toString());
+                final boolean isLoginAvailability = (Boolean) json.get("login_availability");
                 if (!isLoginAvailability) {
                     throw new InstitutionLoginAvailabilityException();
                 }
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 logger.error(
                         "[OSF API] Notify Remote Principal Authenticated Failed: Communication Error - {}",
                         e.getMessage()
@@ -697,12 +697,12 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
      * @return the entitlements
      */
     private List<String> getEntitlements(final String entitlement) {
-        List<String> entitlements = new ArrayList<String>();
-        Object jsonObj = new JSONTokener(entitlement).nextValue();
+        final List<String> entitlements = new ArrayList<String>();
+        final Object jsonObj = new JSONTokener(entitlement).nextValue();
         if (jsonObj instanceof JSONObject) {
             getEduPersonEntitleMent(entitlements, jsonObj);
         } else if (jsonObj instanceof JSONArray) {
-            JSONArray jsonArray = (JSONArray) jsonObj;
+            final JSONArray jsonArray = (JSONArray) jsonObj;
             for (int i = 0; i < jsonArray.length(); i++) {
                 getEduPersonEntitleMent(entitlements, jsonArray.getJSONObject(i));
             }
@@ -715,10 +715,9 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
      *
      * @param entitlements the entitlements
      * @param jsonObj the json obj
-     * @return the edu person entitle ment
      */
-    private void getEduPersonEntitleMent(List<String> entitlements, Object jsonObj) {
-        String eduPersonEntitlement = ((JSONObject) jsonObj).getString("eduPersonEntitlement");
+    private void getEduPersonEntitleMent(final List<String> entitlements, final Object jsonObj) {
+        final String eduPersonEntitlement = ((JSONObject) jsonObj).getString("eduPersonEntitlement");
         if (!StringUtils.isEmpty(eduPersonEntitlement)) {
             entitlements.addAll(Arrays.asList(eduPersonEntitlement.split(";")));
         }
