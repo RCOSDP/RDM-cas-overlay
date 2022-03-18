@@ -110,7 +110,7 @@ public class OpenScienceFrameworkAuthenticationHandler extends AbstractPreAndPos
         this.openScienceFrameworkDao = openScienceFrameworkDao;
     }
 
-    public void setOsfSettingsUrl(String osfSettingsUrl) {
+    public void setOsfSettingsUrl(final String osfSettingsUrl) {
         this.osfSettingsUrl = osfSettingsUrl;
     }
 
@@ -219,9 +219,9 @@ public class OpenScienceFrameworkAuthenticationHandler extends AbstractPreAndPos
 
         // In-case of re-registered user, set settings url to update redirect_uri
         if (isReRegisteredUser(user)) {
-            RequestContext context = RequestContextHolder.getRequestContext();
-            HttpServletRequest request = WebUtils.getHttpServletRequest(context);
-            HttpSession session = request.getSession();
+            final RequestContext context = RequestContextHolder.getRequestContext();
+            final HttpServletRequest request = WebUtils.getHttpServletRequest(context);
+            final HttpSession session = request.getSession();
             session.setAttribute(OAuthConstants.OSF_SETTINGS_URL, this.osfSettingsUrl);
         }
 
@@ -243,19 +243,19 @@ public class OpenScienceFrameworkAuthenticationHandler extends AbstractPreAndPos
      * @return true, if is re registered user
      */
     private boolean isReRegisteredUser(final OpenScienceFrameworkUser user) {
-        String familyName = user.getFamilyName();
-        String familyNameJa = user.getFamilyNameJa();
-        String givenName = user.getGivenName();
-        String givenNameJa = user.getGivenNameJa();
-        JsonArray jobs = user.getJobs();
+        final String familyName = user.getFamilyName();
+        final String familyNameJa = user.getFamilyNameJa();
+        final String givenName = user.getGivenName();
+        final String givenNameJa = user.getGivenNameJa();
+        final JsonArray jobs = user.getJobs();
         boolean isNotSetInstitution = false;
 
         if (jobs.size() == 0) {
             isNotSetInstitution = true;
         } else {
-            JsonObject job = jobs.get(0).getAsJsonObject();
-            String institution = job.get("institution").getAsString();
-            String institutionJa = job.get("institution_ja").getAsString();
+            final JsonObject job = jobs.get(0).getAsJsonObject();
+            final String institution = job.get("institution").getAsString();
+            final String institutionJa = job.get("institution_ja").getAsString();
             if (StringUtils.isEmpty(institution) || StringUtils.isEmpty(institutionJa)) {
                 isNotSetInstitution = true;
             }

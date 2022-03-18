@@ -31,6 +31,8 @@ import com.google.gson.JsonSyntaxException;
 /**
  * Customized Hibernate data type for Postgres {@literal jsonb}.
  * {@link com.google.gson.JsonArray} is used as the object type / class for Postgres {@literal jsonb}.
+ * @author nguyenminhtrung
+ * @since 20.0.0
  */
 public class PostgresJsonbArrayUserType extends PostgresJsonbUserType {
 
