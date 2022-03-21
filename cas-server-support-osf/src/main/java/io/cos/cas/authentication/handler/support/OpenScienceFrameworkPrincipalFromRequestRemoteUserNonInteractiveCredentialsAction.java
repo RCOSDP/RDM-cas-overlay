@@ -197,7 +197,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
     private String institutionsAuthXslLocation;
 
     @NotNull
-    private String institutionsLoginAvailability;
+    private String institutionsLoginAvailabilityUrl;
 
     private Transformer institutionsAuthTransformer;
 
@@ -588,12 +588,12 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
         if (!StringUtils.isEmpty(entitlement)) {
             // send post method to RDM API
             final JSONObject bodyObj = new JSONObject();
-            bodyObj.append("institutionId", institutionId);
-            bodyObj.append("entitlements", getEntitlements(entitlement));
+            bodyObj.put("institutionId", institutionId);
+            bodyObj.put("entitlements", getEntitlements(entitlement));
 
             HttpResponse httpResponse;
             try {
-                httpResponse = Request.Post(this.institutionsLoginAvailability)
+                httpResponse = Request.Post(this.institutionsLoginAvailabilityUrl)
                         .addHeader(new BasicHeader("Content-Type", "text/plain"))
                         .bodyString(bodyObj.toString(), ContentType.APPLICATION_JSON)
                         .execute()
@@ -696,7 +696,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
      * @param entitlement the entitlement
      * @return the entitlements
      */
-    private List<String> getEntitlements(final String entitlement) {
+    protected List<String> getEntitlements(final String entitlement) {
         final List<String> entitlements = new ArrayList<String>();
         final Object jsonObj = new JSONTokener(entitlement).nextValue();
         if (jsonObj instanceof JSONObject) {
@@ -711,12 +711,12 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
     }
 
     /**
-     * Gets the edu person entitle ment.
+     * Gets the edu person entitlement.
      *
      * @param entitlements the entitlements
      * @param jsonObj the json obj
      */
-    private void getEduPersonEntitleMent(final List<String> entitlements, final Object jsonObj) {
+    protected void getEduPersonEntitleMent(final List<String> entitlements, final Object jsonObj) {
         final String eduPersonEntitlement = ((JSONObject) jsonObj).getString("eduPersonEntitlement");
         if (!StringUtils.isEmpty(eduPersonEntitlement)) {
             entitlements.addAll(Arrays.asList(eduPersonEntitlement.split(";")));
@@ -780,8 +780,8 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
         this.institutionsAuthXslLocation = institutionsAuthXslLocation;
     }
 
-    public void setInstitutionsLoginAvailability(final String institutionsLoginAvailability) {
-        this.institutionsLoginAvailability = institutionsLoginAvailability;
+    public void setInstitutionsLoginAvailabilityUrl(final String institutionsLoginAvailabilityUrl) {
+        this.institutionsLoginAvailabilityUrl = institutionsLoginAvailabilityUrl;
     }
 
     public CentralAuthenticationService getCentralAuthenticationService() {

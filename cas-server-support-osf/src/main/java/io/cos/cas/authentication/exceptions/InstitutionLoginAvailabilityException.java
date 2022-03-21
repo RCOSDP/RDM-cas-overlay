@@ -19,7 +19,7 @@ package io.cos.cas.authentication.exceptions;
 /**
  * The Class InstitutionLoginAvailabilityException.
  * @author nguyenminhtrung
- * @since 20.1.0
+ * @since 21.10.0
  */
 public class InstitutionLoginAvailabilityException extends InstitutionLoginFailedException {
 
