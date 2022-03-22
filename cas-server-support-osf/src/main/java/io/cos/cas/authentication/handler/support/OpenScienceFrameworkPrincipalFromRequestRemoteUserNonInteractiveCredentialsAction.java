@@ -593,11 +593,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
 
             HttpResponse httpResponse;
             try {
-                httpResponse = Request.Post(this.institutionsLoginAvailabilityUrl)
-                        .addHeader(new BasicHeader("Content-Type", "text/plain"))
-                        .bodyString(bodyObj.toString(), ContentType.APPLICATION_JSON)
-                        .execute()
-                        .returnResponse();
+                httpResponse = callLoginAvailabilityAPI(bodyObj);
                 final BufferedReader bf = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
                 String bodyData = "";
                 final StringBuilder builder = new StringBuilder();
@@ -688,6 +684,21 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
             );
             throw new InstitutionLoginFailedOsfApiException("Communication Error between OSF CAS and OSF API");
         }
+    }
+
+    /**
+     * Call login availability API.
+     *
+     * @param bodyObj the body obj
+     * @return the http response
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    protected HttpResponse callLoginAvailabilityAPI(final JSONObject bodyObj) throws IOException {
+        return Request.Post(this.institutionsLoginAvailabilityUrl)
+                .addHeader(new BasicHeader("Content-Type", "text/plain"))
+                .bodyString(bodyObj.toString(), ContentType.APPLICATION_JSON)
+                .execute()
+                .returnResponse();
     }
 
     /**
