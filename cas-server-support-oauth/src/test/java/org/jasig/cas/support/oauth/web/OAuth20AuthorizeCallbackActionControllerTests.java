@@ -78,6 +78,8 @@ public final class OAuth20AuthorizeCallbackActionControllerTests {
 
     private static final int TIMEOUT = 7200;
 
+    private static final String OSF_SETTINGS_URL = "http://localhost:5000/settings";
+
     @Test
     public void verifyActionDenied() throws Exception {
 
@@ -428,5 +430,55 @@ public final class OAuth20AuthorizeCallbackActionControllerTests {
         assertNull(mockSession.getAttribute(OAuthConstants.OAUTH20_TOKEN_TYPE));
         assertNull(mockSession.getAttribute(OAuthConstants.OAUTH20_LOGIN_TICKET_ID));
         assertNull(mockSession.getAttribute(OAuthConstants.OAUTH20_SCOPE_SET));
+    }
+
+    @Test
+    public void verifyResponseIsReRegisteredUser() throws Exception {
+
+        final AuthorizationCode authorizationCode = mock(AuthorizationCode.class);
+        when(authorizationCode.getId()).thenReturn(AC_ID);
+
+        final Set<String> scopes = new HashSet<>();
+        scopes.add(NAME1);
+        scopes.add(NAME2);
+
+        final CentralOAuthService centralOAuthService = mock(CentralOAuthService.class);
+        when(centralOAuthService.grantAuthorizationCode(TokenType.OFFLINE, CLIENT_ID, TICKET_GRANTING_TICKET_ID,
+                OSF_SETTINGS_URL, scopes)).thenReturn(authorizationCode);
+
+        final MockHttpServletRequest mockRequest = new MockHttpServletRequest("GET",
+                CONTEXT + OAuthConstants.CALLBACK_AUTHORIZE_ACTION_URL);
+        final MockHttpSession mockSession = new MockHttpSession();
+        mockSession.putValue(OAuthConstants.OAUTH20_CLIENT_ID, CLIENT_ID);
+        mockSession.putValue(OAuthConstants.OAUTH20_STATE, STATE);
+        mockSession.putValue(OAuthConstants.OAUTH20_TOKEN_TYPE, TokenType.OFFLINE);
+        mockSession.putValue(OAuthConstants.OAUTH20_LOGIN_TICKET_ID, TICKET_GRANTING_TICKET_ID);
+        mockSession.putValue(OAuthConstants.OAUTH20_SCOPE_SET, scopes);
+        mockSession.putValue(OAuthConstants.OSF_SETTINGS_URL, OSF_SETTINGS_URL);
+        mockSession.putValue(OAuthConstants.OAUTH20_REDIRECT_URI, OSF_SETTINGS_URL);
+        mockRequest.setSession(mockSession);
+        mockRequest.setParameter(OAuthConstants.OAUTH20_APPROVAL_PROMPT_ACTION,
+                OAuthConstants.OAUTH20_APPROVAL_PROMPT_ACTION_ALLOW);
+
+        final MockHttpServletResponse mockResponse = new MockHttpServletResponse();
+
+        final OAuth20WrapperController oauth20WrapperController = new OAuth20WrapperController();
+        oauth20WrapperController.setCentralOAuthService(centralOAuthService);
+        oauth20WrapperController.afterPropertiesSet();
+
+        final ModelAndView modelAndView = oauth20WrapperController.handleRequest(mockRequest, mockResponse);
+        assertTrue(modelAndView.getView() instanceof RedirectView);
+        final RedirectView redirectView = (RedirectView) modelAndView.getView();
+        assertEquals(redirectView.getUrl(),
+                OSF_SETTINGS_URL + "?" + OAuthConstants.CODE + "=" + AC_ID + "&" + OAuthConstants.STATE + '=' + STATE);
+
+        assertNull(mockSession.getAttribute(OAuthConstants.OAUTH20_RESPONSE_TYPE));
+        assertNull(mockSession.getAttribute(OAuthConstants.OAUTH20_CLIENT_ID));
+        assertNull(mockSession.getAttribute(OAuthConstants.OAUTH20_STATE));
+        assertNull(mockSession.getAttribute(OAuthConstants.OAUTH20_REDIRECT_URI));
+        assertNull(mockSession.getAttribute(OAuthConstants.OAUTH20_TOKEN_TYPE));
+        assertNull(mockSession.getAttribute(OAuthConstants.OAUTH20_LOGIN_TICKET_ID));
+        assertNull(mockSession.getAttribute(OAuthConstants.OAUTH20_SCOPE_SET));
+        assertNull(mockSession.getAttribute(OAuthConstants.OSF_SETTINGS_URL));
     }
 }
