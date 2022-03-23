@@ -237,12 +237,12 @@ public class OpenScienceFrameworkAuthenticationHandler extends AbstractPreAndPos
     }
 
     /**
-     * Checks if is re registered user.
+     * Checks if is re-registered user.
      *
      * @param user the user
-     * @return true, if is re registered user
+     * @return true, if is re-registered user
      */
-    private boolean isReRegisteredUser(final OpenScienceFrameworkUser user) {
+    public boolean isReRegisteredUser(final OpenScienceFrameworkUser user) {
         final String familyName = user.getFamilyName();
         final String familyNameJa = user.getFamilyNameJa();
         final String givenName = user.getGivenName();
@@ -254,9 +254,7 @@ public class OpenScienceFrameworkAuthenticationHandler extends AbstractPreAndPos
             isNotSetInstitution = true;
         } else {
             final JsonObject job = jobs.get(0).getAsJsonObject();
-            final String institution = job.get("institution").getAsString();
-            final String institutionJa = job.get("institution_ja").getAsString();
-            if (StringUtils.isEmpty(institution) || StringUtils.isEmpty(institutionJa)) {
+            if (StringUtils.isEmpty(job.get("institution")) || StringUtils.isEmpty(job.get("institution_ja"))) {
                 isNotSetInstitution = true;
             }
         }
