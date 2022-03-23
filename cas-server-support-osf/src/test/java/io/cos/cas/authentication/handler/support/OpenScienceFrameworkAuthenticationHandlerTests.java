@@ -70,7 +70,7 @@ public class OpenScienceFrameworkAuthenticationHandlerTests {
     }
 
     @Test
-    public void handleIsReRegisterdUserAuthenticateInternalFlow() throws Exception {
+    public void handleIsReRegisterdUserAuthenticateFlow() throws Exception {
         final MockHttpServletRequest mockHttpServletRequest = AbstractTestUtils.getRequestWithShibbolethHeaders();
         final MockRequestContext mockContext = AbstractTestUtils.getContextWithCredentials(mockHttpServletRequest);
         // set mock request
