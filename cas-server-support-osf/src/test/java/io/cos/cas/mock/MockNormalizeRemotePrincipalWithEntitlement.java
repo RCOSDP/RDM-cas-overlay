@@ -21,13 +21,11 @@ import io.cos.cas.authentication.OpenScienceFrameworkCredential;
 public class MockNormalizeRemotePrincipalWithEntitlement extends MockNormalizeRemotePrincipal {
 
     private boolean isSingleEntitlement;
-    private boolean isMultipleEntitlement;
     private boolean isLoginAvailability;
 
     public MockNormalizeRemotePrincipalWithEntitlement(final CentralAuthenticationService centralAuthenticationService) {
         super(centralAuthenticationService);
         this.isSingleEntitlement = false;
-        this.isMultipleEntitlement = false;
         this.isLoginAvailability = false;
     }
 
@@ -41,8 +39,6 @@ public class MockNormalizeRemotePrincipalWithEntitlement extends MockNormalizeRe
 
         if (isSingleEntitlement) {
             user.put("entitlement", AbstractTestUtils.CONST_SINGLE_ENTITLEMENT_INPUT);
-        } else if (isMultipleEntitlement) {
-            user.put("entitlement", AbstractTestUtils.CONST_MULTIPLE_ENTITLEMENT_INPUT);
         }
 
         provider.put("id", credential.getInstitutionId());
@@ -66,10 +62,6 @@ public class MockNormalizeRemotePrincipalWithEntitlement extends MockNormalizeRe
 
     public void setSingleEntitlement(final boolean isSingleEntitlement) {
         this.isSingleEntitlement = isSingleEntitlement;
-    }
-
-    public void setMultipleEntitlement(final boolean isMultipleEntitlement) {
-        this.isMultipleEntitlement = isMultipleEntitlement;
     }
 
     public void setLoginAvailability(final boolean isLoginAvailability) {

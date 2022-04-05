@@ -57,9 +57,7 @@ import org.jasig.cas.ticket.ServiceTicket;
 import org.jasig.cas.ticket.TicketException;
 import org.jasig.cas.ticket.TicketGrantingTicket;
 import org.jasig.cas.web.support.WebUtils;
-import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.json.XML;
 
 import org.pac4j.oauth.client.OrcidClient;
@@ -588,7 +586,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
         if (!StringUtils.isEmpty(entitlement)) {
             // send post method to RDM API
             final JSONObject bodyObj = new JSONObject();
-            bodyObj.put("institutionId", institutionId);
+            bodyObj.put("institution_id", institutionId);
             bodyObj.put("entitlements", getEntitlements(entitlement));
 
             HttpResponse httpResponse;
@@ -709,29 +707,10 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
      */
     protected List<String> getEntitlements(final String entitlement) {
         final List<String> entitlements = new ArrayList<String>();
-        final Object jsonObj = new JSONTokener(entitlement).nextValue();
-        if (jsonObj instanceof JSONObject) {
-            getEduPersonEntitleMent(entitlements, jsonObj);
-        } else if (jsonObj instanceof JSONArray) {
-            final JSONArray jsonArray = (JSONArray) jsonObj;
-            for (int i = 0; i < jsonArray.length(); i++) {
-                getEduPersonEntitleMent(entitlements, jsonArray.getJSONObject(i));
-            }
+        if (!StringUtils.isEmpty(entitlement)) {
+            entitlements.addAll(Arrays.asList(StringUtils.trimArrayElements(entitlement.split(";"))));
         }
         return entitlements;
-    }
-
-    /**
-     * Gets the edu person entitlement.
-     *
-     * @param entitlements the entitlements
-     * @param jsonObj the json obj
-     */
-    protected void getEduPersonEntitleMent(final List<String> entitlements, final Object jsonObj) {
-        final String eduPersonEntitlement = ((JSONObject) jsonObj).getString("eduPersonEntitlement");
-        if (!StringUtils.isEmpty(eduPersonEntitlement)) {
-            entitlements.addAll(Arrays.asList(eduPersonEntitlement.split(";")));
-        }
     }
 
     /**

@@ -1,38 +1,35 @@
 package io.cos.cas.authentication.handler.support;
 
-import io.cos.cas.AbstractTestUtils;
-import io.cos.cas.adaptors.postgres.types.DelegationProtocol;
-import io.cos.cas.authentication.exceptions.InstitutionLoginAvailabilityException;
-import io.cos.cas.authentication.exceptions.InstitutionLoginFailedException;
-import io.cos.cas.authentication.OpenScienceFrameworkCredential;
-import io.cos.cas.mock.MockNormalizeRemotePrincipal;
-import io.cos.cas.mock.MockNormalizeRemotePrincipalWithEntitlement;
-import io.cos.cas.mock.MockNotifyRemotePrincipalAuthenticated;
-
-import org.jasig.cas.authentication.Authentication;
-import org.jasig.cas.CentralAuthenticationService;
-import org.jasig.cas.ticket.TicketGrantingTicket;
-import org.json.JSONObject;
-import org.junit.Test;
-
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.webflow.execution.Event;
-import org.springframework.webflow.test.MockRequestContext;
-
-import javax.security.auth.login.AccountException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import javax.security.auth.login.AccountException;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.jasig.cas.CentralAuthenticationService;
+import org.jasig.cas.authentication.Authentication;
+import org.jasig.cas.ticket.TicketGrantingTicket;
+import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.webflow.execution.Event;
+import org.springframework.webflow.test.MockRequestContext;
+
+import io.cos.cas.AbstractTestUtils;
+import io.cos.cas.adaptors.postgres.types.DelegationProtocol;
+import io.cos.cas.authentication.OpenScienceFrameworkCredential;
+import io.cos.cas.authentication.exceptions.InstitutionLoginAvailabilityException;
+import io.cos.cas.authentication.exceptions.InstitutionLoginFailedException;
+import io.cos.cas.mock.MockNormalizeRemotePrincipal;
+import io.cos.cas.mock.MockNormalizeRemotePrincipalWithEntitlement;
+import io.cos.cas.mock.MockNotifyRemotePrincipalAuthenticated;
 
 /**
  * This class tests the {@link OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCredentialsAction} class.
@@ -259,10 +256,6 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
         // Verify in case single entitlement
         entitlementList = osfRemoteAuthenticate.getEntitlements(AbstractTestUtils.CONST_SINGLE_ENTITLEMENT_INPUT);
         assertEquals(entitlementList.size(), AbstractTestUtils.CONST_SINGLE_ENTITLEMENTS_OUTPUT.length);
-
-        // Verify in case multiple entitlements
-        entitlementList = osfRemoteAuthenticate.getEntitlements(AbstractTestUtils.CONST_MULTIPLE_ENTITLEMENT_INPUT);
-        assertEquals(entitlementList.size(), AbstractTestUtils.CONST_MULTIPLE_ENTITLEMENT_OUTPUT.length);
     }
 
     @Test
@@ -273,9 +266,6 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
         final CentralAuthenticationService centralAuthenticationService = mock(CentralAuthenticationService.class);
         final MockNormalizeRemotePrincipalWithEntitlement osfRemoteAuthenticate = new MockNormalizeRemotePrincipalWithEntitlement(
                 centralAuthenticationService);
-        final JSONObject bodyObj = new JSONObject();
-        bodyObj.put("institutionId", AbstractTestUtils.CONST_INSTITUTION_ID);
-        bodyObj.put("entitlements", AbstractTestUtils.CONST_SINGLE_ENTITLEMENTS_OUTPUT);
 
         final OpenScienceFrameworkCredential osfCredential = new OpenScienceFrameworkCredential();
         osfCredential.setInstitutionId(AbstractTestUtils.CONST_INSTITUTION_ID);
@@ -292,32 +282,6 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
         }
     }
 
-    @Test
-    public void verifyLoginAvailabilityMultipleEntitlementFlow() throws Exception {
-        final MockHttpServletRequest mockHttpServletRequest = AbstractTestUtils
-                .getRequestWithShibbolethHeadersAndMultipleEntitlement();
-        final MockRequestContext mockContext = AbstractTestUtils.getContextWithCredentials(mockHttpServletRequest);
-        final CentralAuthenticationService centralAuthenticationService = mock(CentralAuthenticationService.class);
-        final MockNormalizeRemotePrincipalWithEntitlement osfRemoteAuthenticate = new MockNormalizeRemotePrincipalWithEntitlement(
-                centralAuthenticationService);
-        final JSONObject bodyObj = new JSONObject();
-        bodyObj.put("institutionId", AbstractTestUtils.CONST_INSTITUTION_ID);
-        bodyObj.put("entitlements", AbstractTestUtils.CONST_SINGLE_ENTITLEMENTS_OUTPUT);
-
-        final OpenScienceFrameworkCredential osfCredential = new OpenScienceFrameworkCredential();
-        osfCredential.setInstitutionId(AbstractTestUtils.CONST_INSTITUTION_ID);
-        osfCredential.setUsername(AbstractTestUtils.CONST_MAIL);
-
-        osfRemoteAuthenticate.setMultipleEntitlement(true);
-        osfRemoteAuthenticate.setLoginAvailability(true);
-        osfRemoteAuthenticate
-                .setInstitutionsLoginAvailabilityUrl(AbstractTestUtils.CONST_INSTITUTION_LOGIN_AVAILABILITY_URL);
-        try {
-            osfRemoteAuthenticate.notifyRemotePrincipalAuthenticated(osfCredential);
-        } catch (final AccountException e) {
-        }
-    }
-
     @Test(expected = InstitutionLoginAvailabilityException.class)
     public void verifyLoginAvailabilityExceptionFlow() throws Exception {
         final MockHttpServletRequest mockHttpServletRequest = AbstractTestUtils
@@ -326,9 +290,6 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
         final CentralAuthenticationService centralAuthenticationService = mock(CentralAuthenticationService.class);
         final MockNormalizeRemotePrincipalWithEntitlement osfRemoteAuthenticate = new MockNormalizeRemotePrincipalWithEntitlement(
                 centralAuthenticationService);
-        final JSONObject bodyObj = new JSONObject();
-        bodyObj.put("institutionId", AbstractTestUtils.CONST_INSTITUTION_ID);
-        bodyObj.put("entitlements", AbstractTestUtils.CONST_SINGLE_ENTITLEMENTS_OUTPUT);
 
         final OpenScienceFrameworkCredential osfCredential = new OpenScienceFrameworkCredential();
         osfCredential.setInstitutionId(AbstractTestUtils.CONST_INSTITUTION_ID);
