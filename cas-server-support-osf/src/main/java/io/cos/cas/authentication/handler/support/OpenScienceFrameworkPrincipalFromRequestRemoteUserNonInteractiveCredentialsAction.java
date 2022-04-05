@@ -693,7 +693,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
      */
     protected HttpResponse callLoginAvailabilityAPI(final JSONObject bodyObj) throws IOException {
         return Request.Post(this.institutionsLoginAvailabilityUrl)
-                .addHeader(new BasicHeader("Content-Type", "text/plain"))
+                .addHeader(new BasicHeader("Content-Type", "application/json"))
                 .bodyString(bodyObj.toString(), ContentType.APPLICATION_JSON)
                 .execute()
                 .returnResponse();
