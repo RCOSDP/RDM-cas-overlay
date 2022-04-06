@@ -44,7 +44,6 @@ import org.jasig.cas.authentication.PreventedException;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.util.StringUtils;
 import org.springframework.webflow.execution.RequestContext;
 import org.springframework.webflow.execution.RequestContextHolder;
 
