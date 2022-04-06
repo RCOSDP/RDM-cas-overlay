@@ -254,13 +254,13 @@ public class OpenScienceFrameworkAuthenticationHandler extends AbstractPreAndPos
             isNotSetInstitution = true;
         } else {
             final JsonObject job = jobs.get(0).getAsJsonObject();
-            if (StringUtils.isEmpty(job.get("institution")) || StringUtils.isEmpty(job.get("institution_ja"))) {
+            if (job.get("institution").getAsString().isEmpty() || job.get("institution_ja").getAsString().isEmpty()) {
                 isNotSetInstitution = true;
             }
         }
 
-        return StringUtils.isEmpty(familyName) || StringUtils.isEmpty(familyNameJa) || StringUtils.isEmpty(givenName)
-                || StringUtils.isEmpty(givenNameJa) || isNotSetInstitution;
+        return familyName.isEmpty() || familyNameJa.isEmpty() || givenName.isEmpty() || givenNameJa.isEmpty()
+                || isNotSetInstitution;
     }
 
     /**

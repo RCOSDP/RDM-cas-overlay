@@ -40,6 +40,10 @@ public class OpenScienceFrameworkAuthenticationHandlerTests {
         // user with empty jobs
         ReflectionTestUtils.setField(user, "username", "username");
         ReflectionTestUtils.setField(user, "jobs", jsonArray);
+        ReflectionTestUtils.setField(user, "familyName", "");
+        ReflectionTestUtils.setField(user, "familyNameJa", "");
+        ReflectionTestUtils.setField(user, "givenName", "");
+        ReflectionTestUtils.setField(user, "givenNameJa", "");
         assertEquals(Boolean.TRUE, authenticationHandler.isReRegisteredUser(user));
 
         // user has jobs, not set institution
@@ -47,10 +51,15 @@ public class OpenScienceFrameworkAuthenticationHandlerTests {
         jsonArray = new JsonArray();
         jsonObj = new JsonObject();
         jsonArray.add(jsonObj);
-        jsonObj.addProperty("institution", "institution");
+        jsonObj.addProperty("institution", "");
+        jsonObj.addProperty("institution_ja", "");
 
         ReflectionTestUtils.setField(user, "username", "username");
         ReflectionTestUtils.setField(user, "jobs", jsonArray);
+        ReflectionTestUtils.setField(user, "familyName", "");
+        ReflectionTestUtils.setField(user, "familyNameJa", "");
+        ReflectionTestUtils.setField(user, "givenName", "");
+        ReflectionTestUtils.setField(user, "givenNameJa", "");
         assertEquals(Boolean.TRUE, authenticationHandler.isReRegisteredUser(user));
 
         // user has full data
@@ -89,6 +98,8 @@ public class OpenScienceFrameworkAuthenticationHandlerTests {
         final OpenScienceFrameworkUser user = new OpenScienceFrameworkUser();
         final JsonArray jsonArray = new JsonArray();
         final JsonObject jsonObj = new JsonObject();
+        jsonObj.addProperty("institution", "institution");
+        jsonObj.addProperty("institution_ja", ""); // missing institution_ja
         jsonArray.add(jsonObj);
 
         ReflectionTestUtils.setField(user, "username", "username");
