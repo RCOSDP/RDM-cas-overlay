@@ -24,6 +24,7 @@ import io.cos.cas.authentication.exceptions.AccountNotConfirmedIdPLoginException
 import io.cos.cas.authentication.exceptions.AccountNotConfirmedOsfLoginException;
 import io.cos.cas.authentication.exceptions.CasClientLoginException;
 import io.cos.cas.authentication.exceptions.DelegatedLoginException;
+import io.cos.cas.authentication.exceptions.InstitutionLoginAvailabilityException;
 import io.cos.cas.authentication.exceptions.InstitutionLoginFailedException;
 import io.cos.cas.authentication.exceptions.InstitutionLoginFailedAttributesMissingException;
 import io.cos.cas.authentication.exceptions.InstitutionLoginFailedAttributesParsingException;
@@ -93,6 +94,7 @@ public class OpenScienceFrameworkAuthenticationExceptionHandler extends Authenti
         DEFAULT_ERROR_LIST.add(InvalidUserStatusException.class);
         DEFAULT_ERROR_LIST.add(OneTimePasswordFailedLoginException.class);
         DEFAULT_ERROR_LIST.add(OneTimePasswordRequiredException.class);
+        DEFAULT_ERROR_LIST.add(InstitutionLoginAvailabilityException.class);
     }
 
     // Customized exceptions for delegated login

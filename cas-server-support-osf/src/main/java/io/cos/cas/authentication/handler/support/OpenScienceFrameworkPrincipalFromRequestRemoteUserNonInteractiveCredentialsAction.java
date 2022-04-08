@@ -97,7 +97,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -708,8 +707,8 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
     protected List<String> getEntitlements(final String entitlement) {
         final List<String> entitlements = new ArrayList<String>();
         if (!StringUtils.isEmpty(entitlement)) {
-            String[] arr = entitlement.split(";");
-            for (String str : arr) {
+            final String[] arr = entitlement.split(";");
+            for (final String str : arr) {
                 entitlements.add(str.trim().replace("\\", ""));
             }
         }
