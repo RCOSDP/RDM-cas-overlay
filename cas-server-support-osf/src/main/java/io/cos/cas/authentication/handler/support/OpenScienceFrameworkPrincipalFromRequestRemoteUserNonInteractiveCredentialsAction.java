@@ -707,9 +707,9 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
     protected List<String> getEntitlements(final String entitlement) {
         final List<String> entitlements = new ArrayList<String>();
         if (!StringUtils.isEmpty(entitlement)) {
-            final String[] arr = entitlement.split(";");
+            final String[] arr = entitlement.replace("\\;", ";").split(";");
             for (final String str : arr) {
-                entitlements.add(str.trim().replace("\\", ""));
+                entitlements.add(str.trim());
             }
         }
         return entitlements;
