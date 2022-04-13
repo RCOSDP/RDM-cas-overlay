@@ -585,8 +585,10 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
         if (!StringUtils.isEmpty(entitlement)) {
             // send post method to RDM API
             final JSONObject bodyObj = new JSONObject();
+            final String normalizeEntitlement = entitlement.replace("\\;", ";");
             bodyObj.put("institution_id", institutionId);
-            bodyObj.put("entitlements", getEntitlements(entitlement));
+            bodyObj.put("entitlements", getEntitlements(normalizeEntitlement));
+            user.put("entitlement", normalizeEntitlement); // normalize entitlement in payload
 
             HttpResponse httpResponse;
             try {
@@ -707,7 +709,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
     protected List<String> getEntitlements(final String entitlement) {
         final List<String> entitlements = new ArrayList<String>();
         if (!StringUtils.isEmpty(entitlement)) {
-            final String[] arr = entitlement.replace("\\;", ";").split(";");
+            final String[] arr = entitlement.split(";");
             for (final String str : arr) {
                 entitlements.add(str.trim());
             }
