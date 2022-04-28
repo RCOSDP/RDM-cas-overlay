@@ -39,6 +39,12 @@ public abstract class AbstractTestUtils {
 
     public static final String CONST_DISPLAY_NAME = "Jimmy Steward";
 
+    public static final String CONST_INSTITUTION_LOGIN_AVAILABILITY_URL = "http://institution_login_availability_url/";
+
+    public static final String CONST_SINGLE_ENTITLEMENT_INPUT = "value1-1\\; value1-2\\;value1-3 ";
+
+    public static final String[] CONST_SINGLE_ENTITLEMENTS_OUTPUT = {"value1-1", "value1-2", "value1-3"};
+
     private static final String REMOTE_USER = "REMOTE_USER";
 
     private static final String ATTRIBUTE_PREFIX = "AUTH-";
@@ -82,6 +88,17 @@ public abstract class AbstractTestUtils {
         return request;
     }
 
+    public static MockHttpServletRequest getRequestWithShibbolethHeadersAndSingleEntitlement() {
+        final MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader(SHIBBOLETH_SESSION_HEADER, CONST_NOT_EMPTY_STRING);
+        request.addHeader(REMOTE_USER, AbstractTestUtils.CONST_NOT_EMPTY_STRING);
+        request.addHeader(ATTRIBUTE_PREFIX + CONST_SHIB_IDENTITY_PROVIDER, CONST_INSTITUTION_IDP);
+        for (final Map.Entry<String, Object> entry : generateAttributesMapWithSingleEntitlement(ATTRIBUTE_PREFIX).entrySet()) {
+            request.addHeader(entry.getKey(), entry.getValue());
+        }
+        return request;
+    }
+
     public static MockRequestContext getContextWithCredentials(final MockHttpServletRequest request) {
         return getContextWithCredentials(request, new MockHttpServletResponse());
     }
@@ -105,6 +122,12 @@ public abstract class AbstractTestUtils {
         attributes.put(prefix + "givenName", CONST_GIVEN_NAME);
         attributes.put(prefix + "familyName", CONST_FAMILY_NAME);
         attributes.put(prefix + "mail", CONST_MAIL);
+        return attributes;
+    }
+
+    private static Map<String, Object> generateAttributesMapWithSingleEntitlement(final String prefix) {
+        final Map<String, Object> attributes = generateAttributesMap(prefix);
+        attributes.put(prefix, CONST_SINGLE_ENTITLEMENT_INPUT);
         return attributes;
     }
 

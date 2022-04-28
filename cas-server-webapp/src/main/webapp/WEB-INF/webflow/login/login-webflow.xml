@@ -217,6 +217,8 @@
         <transition on="CasClientLoginException" to="delegatedLoginCasErrorView"/>
         <transition on="OrcidClientLoginException" to="delegatedLoginOrcidErrorView"/>
         <transition on="DelegatedLoginException" to="delegatedLoginGenericErrorView"/>
+        <!-- Custom exception for login availability -->
+        <transition on="InstitutionLoginAvailabilityException" to="casInstitutionLoginAvailabilityFailedView" />
         <!-- Unhandled Exceptions -->
         <transition on="UNKNOWN" to="generateLoginTicket"/>
     </action-state>
@@ -315,7 +317,7 @@
     <end-state id="delegatedLoginCasErrorView" view="delegatedLoginCasErrorView"/>
     <end-state id="delegatedLoginGenericErrorView" view="delegatedLoginGenericErrorView"/>
     <end-state id="delegatedLoginOrcidErrorView" view="delegatedLoginOrcidErrorView"/>
-
+    <end-state id="casInstitutionLoginAvailabilityFailedView" view="casInstitutionLoginAvailabilityFailedView" />
     <end-state id="postView" view="postResponseView">
         <on-entry>
             <set name="requestScope.parameters" value="requestScope.response.attributes"/>

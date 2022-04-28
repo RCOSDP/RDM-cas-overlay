@@ -31,6 +31,7 @@ import com.nimbusds.jwt.SignedJWT;
 
 import io.cos.cas.adaptors.postgres.types.DelegationProtocol;
 import io.cos.cas.authentication.exceptions.DelegatedLoginException;
+import io.cos.cas.authentication.exceptions.InstitutionLoginAvailabilityException;
 import io.cos.cas.authentication.exceptions.InstitutionLoginFailedAttributesMissingException;
 import io.cos.cas.authentication.exceptions.InstitutionLoginFailedAttributesParsingException;
 import io.cos.cas.authentication.exceptions.InstitutionLoginFailedOsfApiException;
@@ -56,7 +57,6 @@ import org.jasig.cas.ticket.ServiceTicket;
 import org.jasig.cas.ticket.TicketException;
 import org.jasig.cas.ticket.TicketGrantingTicket;
 import org.jasig.cas.web.support.WebUtils;
-
 import org.json.JSONObject;
 import org.json.XML;
 
@@ -91,13 +91,16 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -189,6 +192,9 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
 
     @NotNull
     private String institutionsAuthXslLocation;
+
+    @NotNull
+    private String institutionsLoginAvailabilityUrl;
 
     private Transformer institutionsAuthTransformer;
 
@@ -573,6 +579,41 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
             logger.error("[CAS XSLT] Missing names: username={}, institution={}", username, institutionId);
             throw new InstitutionLoginFailedAttributesMissingException("Missing user's names");
         }
+
+        // Call Login Availability API
+        final String entitlement = user.optString("entitlement").trim();
+        if (!StringUtils.isEmpty(entitlement)) {
+            // send post method to RDM API
+            final JSONObject bodyObj = new JSONObject();
+            final String normalizeEntitlement = entitlement.replace("\\;", ";");
+            bodyObj.put("institution_id", institutionId);
+            bodyObj.put("entitlements", getEntitlements(normalizeEntitlement));
+            user.put("entitlement", normalizeEntitlement); // normalize entitlement in payload
+
+            HttpResponse httpResponse;
+            try {
+                httpResponse = callLoginAvailabilityAPI(bodyObj);
+                final BufferedReader bf = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
+                String bodyData = "";
+                final StringBuilder builder = new StringBuilder();
+                while ((bodyData = bf.readLine()) != null) {
+                    builder.append(bodyData);
+                }
+                final JSONObject json = new JSONObject(builder.toString());
+                final boolean isLoginAvailability = (Boolean) json.get("login_availability");
+                if (!isLoginAvailability) {
+                    throw new InstitutionLoginAvailabilityException();
+                }
+            } catch (final IOException e) {
+                logger.error(
+                        "[OSF API] Notify Remote Principal Authenticated Failed: Communication Error - {}",
+                        e.getMessage()
+                );
+                throw new InstitutionLoginFailedOsfApiException("Communication Error between OSF CAS and OSF API");
+            }
+
+        }
+
         final String payload = normalizedPayload.toString();
         logger.info("[CAS XSLT] All attributes checked: username={}, institution={}", username, institutionId);
         logger.debug(
@@ -645,6 +686,38 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
     }
 
     /**
+     * Call login availability API.
+     *
+     * @param bodyObj the body obj
+     * @return the http response
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    protected HttpResponse callLoginAvailabilityAPI(final JSONObject bodyObj) throws IOException {
+        return Request.Post(this.institutionsLoginAvailabilityUrl)
+                .addHeader(new BasicHeader("Content-Type", "application/json"))
+                .bodyString(bodyObj.toString(), ContentType.APPLICATION_JSON)
+                .execute()
+                .returnResponse();
+    }
+
+    /**
+     * Gets the entitlements.
+     *
+     * @param entitlement the entitlement
+     * @return the entitlements
+     */
+    protected List<String> getEntitlements(final String entitlement) {
+        final List<String> entitlements = new ArrayList<String>();
+        if (!StringUtils.isEmpty(entitlement)) {
+            final String[] arr = entitlement.split(";");
+            for (final String str : arr) {
+                entitlements.add(str.trim());
+            }
+        }
+        return entitlements;
+    }
+
+    /**
      * Normalize the Remote Principal credential.
      *
      * @param credential the credential object bearing the username, password, etc...
@@ -699,6 +772,10 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
 
     public void setInstitutionsAuthXslLocation(final String institutionsAuthXslLocation) {
         this.institutionsAuthXslLocation = institutionsAuthXslLocation;
+    }
+
+    public void setInstitutionsLoginAvailabilityUrl(final String institutionsLoginAvailabilityUrl) {
+        this.institutionsLoginAvailabilityUrl = institutionsLoginAvailabilityUrl;
     }
 
     public CentralAuthenticationService getCentralAuthenticationService() {
