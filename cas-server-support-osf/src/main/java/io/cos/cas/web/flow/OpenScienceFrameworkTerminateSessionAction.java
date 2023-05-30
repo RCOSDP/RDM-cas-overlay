@@ -128,7 +128,12 @@ public class OpenScienceFrameworkTerminateSessionAction {
             if (institutionLogoutUrl == null) {
                 logger.warn("Institution {} does not have a dedicated logout url, use default logout redirection instead", institutionId);
             } else {
-                context.getFlowScope().put("logoutRedirectUrl", institutionLogoutUrl);
+		    	final String serviceUrl = context.getRequestParameters().get("service");
+		    	if (serviceUrl == null || serviceUrl.isEmpty()) {
+	            	context.getFlowScope().put("logoutRedirectUrl", institutionLogoutUrl);
+		    	} else {
+	            	context.getFlowScope().put("logoutRedirectUrl", serviceUrl);
+		    	}
                 // return `finish` event to prevent `logoutRedirectUrl` being overwritten
                 return new Event(this, "finish");
             }
