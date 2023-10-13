@@ -692,7 +692,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
                     "[OSF API] Notify Remote Principal Authenticated Failed: Communication Error - {}",
                     e.getMessage()
             );
-            if (errmsg.equals("Bad Request")) {
+            if ("Bad Request".equals(errmsg)) {
                 throw new InstitutionLoginFailedOsfApiLoAException("Communication Error between OSF CAS and OSF API");
             } else {
                 throw new InstitutionLoginFailedOsfApiException("Communication Error between OSF CAS and OSF API");
