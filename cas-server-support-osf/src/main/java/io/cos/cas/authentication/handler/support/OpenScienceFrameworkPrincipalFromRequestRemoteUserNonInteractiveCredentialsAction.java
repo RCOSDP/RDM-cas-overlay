@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2015. Center for Open Science
- * UTF-8で保存するために日本語を埋めておく
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -35,7 +35,7 @@ import io.cos.cas.authentication.exceptions.InstitutionLoginAvailabilityExceptio
 import io.cos.cas.authentication.exceptions.InstitutionLoginFailedAttributesMissingException;
 import io.cos.cas.authentication.exceptions.InstitutionLoginFailedAttributesParsingException;
 import io.cos.cas.authentication.exceptions.InstitutionLoginFailedOsfApiException;
-import io.cos.cas.authentication.exceptions.InstitutionLoginFailedOsfApiLoAException;//@R2022-48 loa
+import io.cos.cas.authentication.exceptions.InstitutionLoginFailedOsfApiLoAException; // @R2022-48 loa
 import io.cos.cas.authentication.OpenScienceFrameworkCredential;
 
 import org.apache.http.client.fluent.Request;
@@ -595,7 +595,11 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
             bodyObj.put("institution_id", institutionId);
             bodyObj.put("entitlements", getEntitlements(normalizeEntitlement));
             user.put("entitlement", normalizeEntitlement); // normalize entitlement in payload
-            logger.info("[CAS XSLT] All attributes checked: institution_id={}, normalizeEntitlement={}", institutionId, normalizeEntitlement);
+            logger.info(
+                "[CAS XSLT] All attributes checked: institution_id={}, normalizeEntitlement={}",
+                institutionId,
+                normalizeEntitlement
+            );
             HttpResponse httpResponse;
             try {
                 httpResponse = callLoginAvailabilityAPI(bodyObj);
@@ -683,16 +687,16 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
             // Return user's username and the institution ID to build the OSF credential
             return new PrincipalAuthenticationResult(username, institutionId);
         } catch (final IOException e) {
-        	final String errmsg = e.getMessage();
+            final String errmsg = e.getMessage();
             logger.error(
                     "[OSF API] Notify Remote Principal Authenticated Failed: Communication Error - {}",
                     e.getMessage()
             );
-        	if (errmsg.equals("Bad Request")) {
+            if (errmsg.equals("Bad Request")) {
                 throw new InstitutionLoginFailedOsfApiLoAException("Communication Error between OSF CAS and OSF API");
-        	} else {
+            } else {
                 throw new InstitutionLoginFailedOsfApiException("Communication Error between OSF CAS and OSF API");
-        	}
+            }
         }
     }
 
