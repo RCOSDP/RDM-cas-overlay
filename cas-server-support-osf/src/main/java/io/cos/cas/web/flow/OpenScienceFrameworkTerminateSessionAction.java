@@ -92,8 +92,8 @@ public class OpenScienceFrameworkTerminateSessionAction {
         Boolean remotePrincipal = Boolean.FALSE;
 
         final HttpServletRequest request = WebUtils.getHttpServletRequest(context);
-    	final String mfa_url = request.getParameter("mfa_url");
-        logger.info("[MFA URL] Param: '{}'", mfa_url);
+    	final String serviceUrl = request.getParameter("service");
+        logger.info("[serviceUrl] Param: '{}'", serviceUrl);
         // for logout, we need to get the cookie's value
         if (tgtId == null) {
             tgtId = this.ticketGrantingTicketCookieGenerator.retrieveCookieValue(request);
@@ -127,8 +127,8 @@ public class OpenScienceFrameworkTerminateSessionAction {
         final String institutionLogoutUrl;
         // if logged in through institutions, redirect to institution logout endpoint
         if (remotePrincipal && institutionId != null) {
-            if (mfa_url != null) {
-                institutionLogoutUrl = mfa_url;
+            if (serviceUrl != null) {
+                institutionLogoutUrl = serviceUrl;
             } else {
                 institutionLogoutUrl = institutionHandler.findInstitutionLogoutUrlById(institutionId);
             }
@@ -139,8 +139,8 @@ public class OpenScienceFrameworkTerminateSessionAction {
                 // return `finish` event to prevent `logoutRedirectUrl` being overwritten
                 return new Event(this, "finish");
             }
-        } else if (mfa_url != null) {
-            context.getFlowScope().put("logoutRedirectUrl", mfa_url);
+        } else if (serviceUrl != null) {
+            context.getFlowScope().put("logoutRedirectUrl", serviceUrl);
             return new Event(this, "finish");
         }
 

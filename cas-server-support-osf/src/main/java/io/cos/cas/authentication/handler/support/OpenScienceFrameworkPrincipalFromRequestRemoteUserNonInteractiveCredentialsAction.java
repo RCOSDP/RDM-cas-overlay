@@ -398,7 +398,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
             // Parse the attributes and notify OSF API of the remote principal authentication
             final PrincipalAuthenticationResult remoteUserInfo = notifyRemotePrincipalAuthenticated(credential);
             logger.info("[SAML Shibboleth] context : '{}'", remoteUserInfo.getContext());
-	        final JSONObject json = new JSONObject(remoteUserInfo.getContext());
+            final JSONObject json = new JSONObject(remoteUserInfo.getContext());
             final String mfa_url = json.getString("mfa_url");
             if (StringUtils.hasText(mfa_url)) {
                 try {
@@ -530,7 +530,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
             // Parse the attributes and notify OSF API of the remote principal authentication
             final PrincipalAuthenticationResult remoteUserInfo = notifyRemotePrincipalAuthenticated(credential);
             logger.info("[SAML Shibboleth] context : '{}'", remoteUserInfo.getContext());
-	        final JSONObject json = new JSONObject(remoteUserInfo.getContext());
+            final JSONObject json = new JSONObject(remoteUserInfo.getContext());
             final String mfa_url = json.getString("mfa_url");
             if (StringUtils.hasText(mfa_url)) {
                 try {
@@ -703,7 +703,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
                     .execute()
                     .returnResponse();
             final int statusCode = httpResponse.getStatusLine().getStatusCode();
-			final String context = new BasicResponseHandler().handleResponse(httpResponse);
+            final String context = new BasicResponseHandler().handleResponse(httpResponse);
             logger.info(
                     "[OSF API] Notify Remote Principal Authenticated Response: username={} statusCode={}  context={}",
                     username,
