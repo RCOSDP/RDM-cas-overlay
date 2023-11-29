@@ -141,6 +141,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
 
         private String username;
         private String institutionId;
+        private String context;
 
         /**
          * Creates a new instance with the given parameters.
@@ -148,9 +149,10 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
          * @param username The username
          * @param institutionId The institution id
          */
-        public PrincipalAuthenticationResult(final String username, final String institutionId) {
+        public PrincipalAuthenticationResult(final String username, final String institutionId, final String context) {
             this.username = username;
             this.institutionId = institutionId;
+            this.context = context;
         }
 
         public String getUsername() {
@@ -159,6 +161,10 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
 
         public String getInstitutionId() {
             return institutionId;
+        }
+
+        public String getContext() {
+            return context;
         }
     }
 
@@ -323,6 +329,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
     ) throws AccountException, FailedLoginException {
 
         final HttpServletRequest request = WebUtils.getHttpServletRequest(context);
+        final HttpServletResponse response = WebUtils.getHttpServletResponse(context);
 
         // WARN: Do not use `WebUtils.getCredential(RequestContext context)`, it will make the credential `null`.
         // TODO: Check both `FlowScope` and `RequestScope`. Write a `.getCredential(RequestContext context)` which
@@ -390,6 +397,20 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
 
             // Parse the attributes and notify OSF API of the remote principal authentication
             final PrincipalAuthenticationResult remoteUserInfo = notifyRemotePrincipalAuthenticated(credential);
+            logger.info("[SAML Shibboleth] context : '{}'", remoteUserInfo.getContext());
+	        final JSONObject json = new JSONObject(remoteUserInfo.getContext());
+            final String mfa_url = json.getString("mfa_url");
+            if (StringUtils.hasText(mfa_url)) {
+                try {
+                    response.sendRedirect(mfa_url);
+                } catch (final IOException e) {
+                    logger.error(
+                            "[OSF API] Notify Remote Principal Authenticated Failed: Communication Error - {}",
+                            e.getMessage()
+                    );
+                    throw new InstitutionLoginFailedOsfApiLoAException("Communication Error between OSF CAS and OSF API");
+                }
+            }
 
             // Build and return the OSF-specific credential
             credential.setUsername(remoteUserInfo.getUsername());
@@ -508,6 +529,20 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
 
             // Parse the attributes and notify OSF API of the remote principal authentication
             final PrincipalAuthenticationResult remoteUserInfo = notifyRemotePrincipalAuthenticated(credential);
+            logger.info("[SAML Shibboleth] context : '{}'", remoteUserInfo.getContext());
+	        final JSONObject json = new JSONObject(remoteUserInfo.getContext());
+            final String mfa_url = json.getString("mfa_url");
+            if (StringUtils.hasText(mfa_url)) {
+                try {
+                    response.sendRedirect(mfa_url);
+                } catch (final IOException e) {
+                    logger.error(
+                            "[OSF API] Notify Remote Principal Authenticated Failed: Communication Error - {}",
+                            e.getMessage()
+                    );
+                    throw new InstitutionLoginFailedOsfApiLoAException("Communication Error between OSF CAS and OSF API");
+                }
+            }
 
             credential.setUsername(remoteUserInfo.getUsername());
             credential.setInstitutionId(remoteUserInfo.getInstitutionId());
@@ -668,24 +703,25 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
                     .execute()
                     .returnResponse();
             final int statusCode = httpResponse.getStatusLine().getStatusCode();
+			final String context = new BasicResponseHandler().handleResponse(httpResponse);
             logger.info(
-                    "[OSF API] Notify Remote Principal Authenticated Response: username={} statusCode={}",
+                    "[OSF API] Notify Remote Principal Authenticated Response: username={} statusCode={}  context={}",
                     username,
-                    statusCode
+                    statusCode,
+                    context
             );
             // The OSF API institution authentication endpoint always returns the HTTP 204 No Content if successful.
-            if (statusCode != HttpStatus.SC_NO_CONTENT) {
-                final String responseString = new BasicResponseHandler().handleResponse(httpResponse);
+            //if (statusCode != HttpStatus.SC_NO_CONTENT) {
+            if (statusCode != HttpStatus.SC_OK) {
                 logger.error(
-                        "[OSF API] Notify Remote Principal Authenticated Failed: statusCode={}, body={}",
+                        "[OSF API] Notify Remote Principal Authenticated Failed: statusCode={}, context={}",
                         statusCode,
-                        responseString
+                        context
                 );
                 throw new InstitutionLoginFailedOsfApiException("OSF API failed to process CAS request");
             }
-
             // Return user's username and the institution ID to build the OSF credential
-            return new PrincipalAuthenticationResult(username, institutionId);
+            return new PrincipalAuthenticationResult(username, institutionId, context);
         } catch (final IOException e) {
             final String errmsg = e.getMessage();
             logger.error(
