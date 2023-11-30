@@ -400,7 +400,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
             final PrincipalAuthenticationResult remoteUserInfo = notifyRemotePrincipalAuthenticated(credential);
             final String remoteUserContext = remoteUserInfo.getContext();
             logger.info("[SAML Shibboleth] context : '{}'", remoteUserContext);
-            if (remoteUserContext != null) {
+            if (!StringUtils.isEmpty(remoteUserContext)) {
                 final JSONObject json = new JSONObject(remoteUserContext);
                 final String mfaUrl = json.getString("mfa_url");
                 if (StringUtils.hasText(mfaUrl)) {
@@ -535,7 +535,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
             final PrincipalAuthenticationResult remoteUserInfo = notifyRemotePrincipalAuthenticated(credential);
             final String remoteUserContext = remoteUserInfo.getContext();
             logger.info("[CAS PAC4J] context : '{}'", remoteUserContext);
-            if (remoteUserContext != null) {
+            if (!StringUtils.isEmpty(remoteUserContext)) {
                 final JSONObject json = new JSONObject(remoteUserContext);
                 final String mfaUrl = json.getString("mfa_url");
                 if (StringUtils.hasText(mfaUrl)) {
