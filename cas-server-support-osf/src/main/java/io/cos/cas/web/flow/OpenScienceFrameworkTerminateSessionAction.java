@@ -92,7 +92,7 @@ public class OpenScienceFrameworkTerminateSessionAction {
         Boolean remotePrincipal = Boolean.FALSE;
 
         final HttpServletRequest request = WebUtils.getHttpServletRequest(context);
-    	final String serviceUrl = request.getParameter("service");
+        final String serviceUrl = request.getParameter("service");
         logger.info("[serviceUrl] Param: '{}'", serviceUrl);
         // for logout, we need to get the cookie's value
         if (tgtId == null) {
