@@ -59,6 +59,7 @@ import org.jasig.cas.ticket.TicketException;
 import org.jasig.cas.ticket.TicketGrantingTicket;
 import org.jasig.cas.web.support.WebUtils;
 import org.json.JSONObject;
+import org.json.JSONException;
 import org.json.XML;
 
 import org.pac4j.oauth.client.OrcidClient;
@@ -95,7 +96,6 @@ import javax.xml.transform.stream.StreamSource;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.JSONException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
