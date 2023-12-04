@@ -400,21 +400,25 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
             final PrincipalAuthenticationResult remoteUserInfo = notifyRemotePrincipalAuthenticated(credential);
             final String remoteUserContext = remoteUserInfo.getContext();
             logger.info("[SAML Shibboleth] context : '{}'", remoteUserContext);
-            if (!StringUtils.isEmpty(remoteUserContext)) {
-                final StringBuilder builder = new StringBuilder();
-                builder.append(remoteUserContext);
-                final JSONObject json = new JSONObject(builder.toString());
-                final String mfaUrl = json.getString("mfa_url");
-                if (StringUtils.hasText(mfaUrl)) {
-                    try {
-                        response.sendRedirect(mfaUrl);
-                    } catch (final IOException e) {
-                        logger.error(
-                                "[OSF API] Notify Remote Principal Authenticated Failed: Communication Error - {}",
-                                e.getMessage()
-                        );
-                        throw new InstitutionLoginFailedOsfApiLoAException("Communication Error between OSF CAS and OSF API");
-                    }
+            try {
+                final JSONObject json = new JSONObject(remoteUserContext);
+            } catch (final JSONException e) {
+                logger.error(
+                        "[OSF API] Notify Remote Principal Authenticated Failed: Communication Error - {}",
+                        e.getMessage()
+                );
+                throw new InstitutionLoginFailedOsfApiException("Communication Error between OSF CAS and OSF API");
+            }
+            final String mfaUrl = json.getString("mfa_url");
+            if (StringUtils.hasText(mfaUrl)) {
+                try {
+                    response.sendRedirect(mfaUrl);
+                } catch (final IOException e) {
+                    logger.error(
+                            "[OSF API] Notify Remote Principal Authenticated Failed: Communication Error - {}",
+                            e.getMessage()
+                    );
+                    throw new InstitutionLoginFailedOsfApiException("Communication Error between OSF CAS and OSF API");
                 }
             }
 
@@ -537,21 +541,25 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
             final PrincipalAuthenticationResult remoteUserInfo = notifyRemotePrincipalAuthenticated(credential);
             final String remoteUserContext = remoteUserInfo.getContext();
             logger.info("[CAS PAC4J] context : '{}'", remoteUserContext);
-            if (!StringUtils.isEmpty(remoteUserContext)) {
-                final StringBuilder builder = new StringBuilder();
-                builder.append(remoteUserContext);
-                final JSONObject json = new JSONObject(builder.toString());
-                final String mfaUrl = json.getString("mfa_url");
-                if (StringUtils.hasText(mfaUrl)) {
-                    try {
-                        response.sendRedirect(mfaUrl);
-                    } catch (final IOException e) {
-                        logger.error(
-                                "[OSF API] Notify Remote Principal Authenticated Failed: Communication Error - {}",
-                                e.getMessage()
-                        );
-                        throw new InstitutionLoginFailedOsfApiLoAException("Communication Error between OSF CAS and OSF API");
-                    }
+            try {
+                final JSONObject json = new JSONObject(remoteUserContext);
+            } catch (final JSONException e) {
+                logger.error(
+                        "[OSF API] Notify Remote Principal Authenticated Failed: Communication Error - {}",
+                        e.getMessage()
+                );
+                throw new InstitutionLoginFailedOsfApiException("Communication Error between OSF CAS and OSF API");
+            }
+            final String mfaUrl = json.getString("mfa_url");
+            if (StringUtils.hasText(mfaUrl)) {
+                try {
+                    response.sendRedirect(mfaUrl);
+                } catch (final IOException e) {
+                    logger.error(
+                            "[OSF API] Notify Remote Principal Authenticated Failed: Communication Error - {}",
+                            e.getMessage()
+                    );
+                    throw new InstitutionLoginFailedOsfApiException("Communication Error between OSF CAS and OSF API");
                 }
             }
 
