@@ -26,6 +26,6 @@ public class MockNotifyRemotePrincipalAuthenticated extends MockOsfRemoteAuthent
         return new PrincipalAuthenticationResult(
             AbstractTestUtils.CONST_MAIL,
             AbstractTestUtils.CONST_INSTITUTION_ID,
-            AbstractTestUtils.CONST_NOT_EMPTY_STRING);
+            AbstractTestUtils.CONST_JSON_STRING);
     }
 }
