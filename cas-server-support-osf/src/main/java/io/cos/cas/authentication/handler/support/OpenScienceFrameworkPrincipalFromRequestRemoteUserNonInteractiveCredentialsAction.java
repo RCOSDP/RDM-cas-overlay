@@ -95,6 +95,7 @@ import javax.xml.transform.stream.StreamSource;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.JSONException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -399,9 +400,10 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
             // Parse the attributes and notify OSF API of the remote principal authentication
             final PrincipalAuthenticationResult remoteUserInfo = notifyRemotePrincipalAuthenticated(credential);
             final String remoteUserContext = remoteUserInfo.getContext();
+            final JSONObject json;
             logger.info("[SAML Shibboleth] context : '{}'", remoteUserContext);
             try {
-                final JSONObject json = new JSONObject(remoteUserContext);
+                json = new JSONObject(remoteUserContext);
             } catch (final JSONException e) {
                 logger.error(
                         "[OSF API] Notify Remote Principal Authenticated Failed: Communication Error - {}",
@@ -540,9 +542,10 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
             // Parse the attributes and notify OSF API of the remote principal authentication
             final PrincipalAuthenticationResult remoteUserInfo = notifyRemotePrincipalAuthenticated(credential);
             final String remoteUserContext = remoteUserInfo.getContext();
+            final JSONObject json;
             logger.info("[CAS PAC4J] context : '{}'", remoteUserContext);
             try {
-                final JSONObject json = new JSONObject(remoteUserContext);
+                json = new JSONObject(remoteUserContext);
             } catch (final JSONException e) {
                 logger.error(
                         "[OSF API] Notify Remote Principal Authenticated Failed: Communication Error - {}",
