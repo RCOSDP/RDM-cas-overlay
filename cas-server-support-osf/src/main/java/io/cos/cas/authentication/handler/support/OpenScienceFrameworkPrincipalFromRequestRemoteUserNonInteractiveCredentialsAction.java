@@ -411,7 +411,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
                 );
                 throw new InstitutionLoginFailedOsfApiException("Communication Error between OSF CAS and OSF API");
             }
-            final String mfaUrl = json.getString("mfa_url");
+            final String mfaUrl = json.optString("mfa_url");
             if (StringUtils.hasText(mfaUrl)) {
                 try {
                     response.sendRedirect(mfaUrl);
@@ -553,7 +553,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
                 );
                 throw new InstitutionLoginFailedOsfApiException("Communication Error between OSF CAS and OSF API");
             }
-            final String mfaUrl = json.getString("mfa_url");
+            final String mfaUrl = json.optString("mfa_url");
             if (StringUtils.hasText(mfaUrl)) {
                 try {
                     response.sendRedirect(mfaUrl);
