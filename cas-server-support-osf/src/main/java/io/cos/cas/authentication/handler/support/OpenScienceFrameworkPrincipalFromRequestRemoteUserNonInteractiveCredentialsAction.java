@@ -734,7 +734,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
             );
             // The OSF API institution authentication endpoint always returns the HTTP 204 No Content if successful.
             //if (statusCode != HttpStatus.SC_NO_CONTENT) {
-            if (statusCode != HttpStatus.SC_OK) {
+            if (statusCode != HttpStatus.SC_OK && statusCode != HttpStatus.SC_NO_CONTENT) {
                 logger.error(
                         "[OSF API] Notify Remote Principal Authenticated Failed: statusCode={}, context={}",
                         statusCode,
