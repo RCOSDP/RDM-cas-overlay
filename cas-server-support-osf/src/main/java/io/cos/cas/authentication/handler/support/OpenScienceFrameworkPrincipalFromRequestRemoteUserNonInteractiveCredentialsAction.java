@@ -580,8 +580,10 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
             throw new InstitutionLoginFailedAttributesMissingException("Missing user's names");
         }
 
+        logger.info("[CAS XSLT] All attributes: normalizedPayload={}", normalizedPayload);
         // Call Login Availability API
         final String entitlement = user.optString("entitlement").trim();
+        logger.info("[CAS XSLT] User attributes: user={}", user);
         if (!StringUtils.isEmpty(entitlement)) {
             // send post method to RDM API
             final JSONObject bodyObj = new JSONObject();
