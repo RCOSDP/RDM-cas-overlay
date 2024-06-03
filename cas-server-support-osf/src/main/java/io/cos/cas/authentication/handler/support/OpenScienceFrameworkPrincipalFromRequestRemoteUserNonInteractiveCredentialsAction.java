@@ -580,6 +580,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
             throw new InstitutionLoginFailedAttributesMissingException("Missing user's names");
         }
 
+        logger.debug("[CAS XSLT] All attributes: normalizedPayload - {}", normalizedPayload);
         // Call Login Availability API
         final String sn = user.optString("sn").trim();
         final String o = user.optString("o").trim();
@@ -601,6 +602,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
         final String jaou = user.optString("jaou").trim();
         final String gakuninScopedPersonalUniqueCode = user.optString("gakuninScopedPersonalUniqueCode").trim();
 
+        logger.debug("[CAS XSLT] User attributes: user - {}", user);
         // send post method to RDM API
         final JSONObject bodyObj = new JSONObject();
         bodyObj.put("institution_id", institutionId);
@@ -628,8 +630,16 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
 
         HttpResponse httpResponse;
         try {
+            logger.debug(
+                    "[OSF API] Login Availability API request body - {}",
+                    bodyObj.toString()
+            );
             httpResponse = callLoginAvailabilityAPI(bodyObj);
             final int statusCode = httpResponse.getStatusLine().getStatusCode();
+            logger.debug(
+                    "[OSF API] Login Availability API response status code - {}",
+                    statusCode
+            );
             if (statusCode == HttpStatus.SC_FORBIDDEN) {
                 throw new InstitutionLoginAvailabilityException();
             }
@@ -641,6 +651,10 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
                 builder.append(bodyData);
             }
             final JSONObject json = new JSONObject(builder.toString());
+            logger.debug(
+                    "[OSF API] Login Availability API response body - {}",
+                    json.toString()
+            );
             final String loginAvailability = (String) json.get("login_availability");
             normalizedPayload.put("login_availability", loginAvailability);
         } catch (final IOException e) {

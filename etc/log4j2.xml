@@ -34,10 +34,10 @@
         </File> -->
     </Appenders>
     <Loggers>
-        <Logger name="io.cos" level="info" additivity="false">
+        <Logger name="io.cos" level="debug" additivity="false">
             <AppenderRef ref="Console" />
         </Logger>
-        <Logger name="org.jasig" level="info" additivity="false">
+        <Logger name="org.jasig" level="debug" additivity="false">
             <AppenderRef ref="Console" />
         </Logger>
 
@@ -91,7 +91,7 @@
         <Logger name="perfStatsLogger" level="off" additivity="false">
             <AppenderRef ref="Console" />
         </Logger>
-        <Root level="warn">
+        <Root level="debug">
             <AppenderRef ref="Console" />
         </Root>
     </Loggers>
