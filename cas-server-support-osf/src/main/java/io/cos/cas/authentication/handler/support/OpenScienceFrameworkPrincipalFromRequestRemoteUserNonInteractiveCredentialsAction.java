@@ -581,14 +581,11 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
         }
 
         logger.info("[CAS XSLT] All attributes: normalizedPayload - {}", normalizedPayload);
-        // Call Login Availability API
-        final String sn = user.optString("sn").trim();
+        final String email = user.optString("email").trim();
         final String o = user.optString("o").trim();
         final String ou = user.optString("ou").trim();
-        final String displayName = user.optString("displayName").trim();
         final String eduPersonAffiliation = user.optString("eduPersonAffiliation").trim();
-        final String eduPersonPrincipalName = user.optString("eduPersonPrincipalName").trim();
-        final String eduPersonEntitlement = user.optString("eduPersonEntitlement").trim();
+        final String entitlement = user.optString("entitlement").trim();
         final String eduPersonScopedAffiliation = user.optString("eduPersonScopedAffiliation").trim();
         final String eduPersonTargetedID = user.optString("eduPersonTargetedID").trim();
         final String eduPersonAssurance = user.optString("eduPersonAssurance").trim();
@@ -603,18 +600,18 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
         final String gakuninScopedPersonalUniqueCode = user.optString("gakuninScopedPersonalUniqueCode").trim();
 
         logger.info("[CAS XSLT] User attributes: user - {}", user);
-        // send post method to RDM API
+        // Call Login Availability API
         final JSONObject bodyObj = new JSONObject();
         bodyObj.put("institution_id", institutionId);
-        bodyObj.put("mail", username);
-        bodyObj.put("sn", sn);
+        bodyObj.put("mail", email);
+        bodyObj.put("sn", familyName);
         bodyObj.put("o", getStringList(o));
         bodyObj.put("ou", ou);
         bodyObj.put("givenName", givenName);
         bodyObj.put("displayName", fullname);
         bodyObj.put("eduPersonAffiliation", getStringList(eduPersonAffiliation));
-        bodyObj.put("eduPersonPrincipalName", eduPersonPrincipalName);
-        bodyObj.put("eduPersonEntitlement", getStringList(eduPersonEntitlement));
+        bodyObj.put("eduPersonPrincipalName", username);
+        bodyObj.put("eduPersonEntitlement", getStringList(entitlement));
         bodyObj.put("eduPersonScopedAffiliation", getStringList(eduPersonScopedAffiliation));
         bodyObj.put("eduPersonTargetedID", getStringList(eduPersonTargetedID));
         bodyObj.put("eduPersonAssurance", getStringList(eduPersonAssurance));
@@ -628,6 +625,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
         bodyObj.put("jaou", jaou);
         bodyObj.put("gakuninScopedPersonalUniqueCode", getStringList(gakuninScopedPersonalUniqueCode));
 
+        // send post method to RDM API
         HttpResponse httpResponse;
         try {
             logger.info(
