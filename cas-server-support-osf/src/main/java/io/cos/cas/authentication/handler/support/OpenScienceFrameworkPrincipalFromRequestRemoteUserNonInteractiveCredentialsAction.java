@@ -654,7 +654,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
                     json.toString()
             );
             final String loginAvailability = (String) json.get("login_availability");
-            normalizedPayload.put("login_availability", loginAvailability);
+            user.put("login_availability", loginAvailability);
         } catch (final IOException e) {
             logger.error(
                     "[OSF API] Notify Remote Principal Authenticated Failed: Communication Error - {}",
@@ -665,7 +665,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
 
         final String payload = normalizedPayload.toString();
         logger.info("[CAS XSLT] All attributes checked: username={}, institution={}", username, institutionId);
-        logger.debug(
+        logger.info(
                 "[CAS XSLT] All attributes checked: username={}, institution={}, normalizedPayload={}",
                 username,
                 institutionId,
