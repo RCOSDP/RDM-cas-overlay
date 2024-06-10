@@ -324,7 +324,7 @@
     <end-state id="delegatedLoginCasErrorView" view="delegatedLoginCasErrorView"/>
     <end-state id="delegatedLoginGenericErrorView" view="delegatedLoginGenericErrorView"/>
     <end-state id="delegatedLoginOrcidErrorView" view="delegatedLoginOrcidErrorView"/>
-    <end-state id="casInstitutionLoginAvailabilityFailedView" view="externalRedirect:#{osf.url}&amp;login_not_available=true" />
+    <end-state id="casInstitutionLoginAvailabilityFailedView" view="casInstitutionLoginAvailabilityFailedView" />
     <end-state id="postView" view="postResponseView">
         <on-entry>
             <set name="requestScope.parameters" value="requestScope.response.attributes"/>
