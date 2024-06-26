@@ -375,7 +375,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
                 //       the identification attribute correctly.
                 // throw new InstitutionLoginFailedException("Missing user's institutional identity");
             } else {
-                logger.info("[SAML Shibboleth] 文字化けチェック User's institutional identity: '{}'", remoteUser);
+                logger.info("[SAML Shibboleth] User's institutional identity: '{}'", remoteUser);
             }
 
             // Retrieve all attributes from the Shibboleth request headers.
@@ -395,7 +395,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
                 }
             }
 
-            logger.info("[SAML Shibboleth] credentialチェック : '{}'", credential);
+            logger.info("[SAML Shibboleth] credential : '{}'", credential);
 
             // Parse the attributes and notify OSF API of the remote principal authentication
             final PrincipalAuthenticationResult remoteUserInfo = notifyRemotePrincipalAuthenticated(credential);
