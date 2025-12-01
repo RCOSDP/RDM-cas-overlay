@@ -117,6 +117,8 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
         final OpenScienceFrameworkCredential osfCredential = new OpenScienceFrameworkCredential();
         osfCredential.setUsername(AbstractTestUtils.CONST_MAIL);
         osfCredential.setInstitutionId(AbstractTestUtils.CONST_INSTITUTION_ID);
+        osfRemoteAuthenticate
+                .setInstitutionsLoginAvailabilityUrl(AbstractTestUtils.CONST_INSTITUTION_LOGIN_AVAILABILITY_URL);
         try {
             osfRemoteAuthenticate.notifyRemotePrincipalAuthenticated(osfCredential);
         } catch (final AccountException e) {
@@ -254,7 +256,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
         List<String> entitlementList = new ArrayList<String>();
 
         // Verify in case single entitlement
-        entitlementList = osfRemoteAuthenticate.getEntitlements(AbstractTestUtils.CONST_SINGLE_ENTITLEMENT_INPUT);
+        entitlementList = osfRemoteAuthenticate.getStringList(AbstractTestUtils.CONST_SINGLE_ENTITLEMENT_INPUT);
         assertEquals(entitlementList.size(), AbstractTestUtils.CONST_SINGLE_ENTITLEMENTS_OUTPUT.length);
     }
 
@@ -272,7 +274,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
         osfCredential.setUsername(AbstractTestUtils.CONST_MAIL);
 
         osfRemoteAuthenticate.setSingleEntitlement(true);
-        osfRemoteAuthenticate.setLoginAvailability(true);
+        osfRemoteAuthenticate.setLoginAvailability("can login");
         osfRemoteAuthenticate
                 .setInstitutionsLoginAvailabilityUrl(AbstractTestUtils.CONST_INSTITUTION_LOGIN_AVAILABILITY_URL);
 
@@ -296,7 +298,6 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
         osfCredential.setUsername(AbstractTestUtils.CONST_MAIL);
 
         osfRemoteAuthenticate.setSingleEntitlement(true);
-        osfRemoteAuthenticate.setLoginAvailability(false);
         osfRemoteAuthenticate
                 .setInstitutionsLoginAvailabilityUrl(AbstractTestUtils.CONST_INSTITUTION_LOGIN_AVAILABILITY_URL);
         osfRemoteAuthenticate.notifyRemotePrincipalAuthenticated(osfCredential);
