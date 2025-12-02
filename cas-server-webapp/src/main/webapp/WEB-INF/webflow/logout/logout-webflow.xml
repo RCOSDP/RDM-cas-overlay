@@ -25,6 +25,10 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.springframework.org/schema/webflow http://www.springframework.org/schema/webflow/spring-webflow.xsd">
 
+    <on-start>
+        <evaluate expression="initialFlowSetupAction"/>
+    </on-start>
+
     <action-state id="terminateSession">
         <evaluate expression="terminateSessionAction.terminate(flowRequestContext)" />
         <transition on="success" to="doLogout" />
@@ -48,8 +52,13 @@
     </view-state>
 
     <decision-state id="finishLogout">
-        <if test="flowScope.logoutRedirectUrl != null" then="redirectView" else="logoutView" />
+        <if test="flowScope.logoutRedirectUrl != null" then="serviceAuthorizationCheck" else="logoutView" />
     </decision-state>
+
+    <action-state id="serviceAuthorizationCheck">
+        <evaluate expression="serviceAuthorizationCheck"/>
+        <transition to="redirectView"/>
+    </action-state>
 
     <end-state id="redirectView" view="externalRedirect:#{flowScope.logoutRedirectUrl}" />
 
