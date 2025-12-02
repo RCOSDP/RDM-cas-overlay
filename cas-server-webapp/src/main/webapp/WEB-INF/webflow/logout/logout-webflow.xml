@@ -48,8 +48,13 @@
     </view-state>
 
     <decision-state id="finishLogout">
-        <if test="flowScope.logoutRedirectUrl != null" then="redirectView" else="logoutView" />
+        <if test="flowScope.logoutRedirectUrl != null" then="serviceAuthorizationCheck" else="logoutView" />
     </decision-state>
+
+    <action-state id="serviceAuthorizationCheck">
+        <evaluate expression="serviceAuthorizationCheck"/>
+        <transition to="redirectView"/>
+    </action-state>
 
     <end-state id="redirectView" view="externalRedirect:#{flowScope.logoutRedirectUrl}" />
 
