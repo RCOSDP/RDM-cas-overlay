@@ -415,7 +415,9 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
                 final String mfaUrl = json.optString("mfa_url");
                 if (StringUtils.hasText(mfaUrl)) {
                     try {
+                        logger.info("[OSF API] Redirect MFA URL: '{}'", mfaUrl);
                         response.sendRedirect(mfaUrl);
+                        return null;
                     } catch (final IOException e) {
                         logger.error(
                                 "[OSF API] Notify Remote Principal Authenticated Failed: Communication Error - {}",
@@ -558,7 +560,9 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
                 final String mfaUrl = json.optString("mfa_url");
                 if (StringUtils.hasText(mfaUrl)) {
                     try {
+                        logger.info("[OSF API] Redirect MFA URL: '{}'", mfaUrl);
                         response.sendRedirect(mfaUrl);
+                        return null;
                     } catch (final IOException e) {
                         logger.error(
                                 "[OSF API] Notify Remote Principal Authenticated Failed: Communication Error - {}",
