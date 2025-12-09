@@ -16,9 +16,26 @@
 
 --%>
 
-<%-- Login availability failed redirect page --%>
+<%-- Login availability failed page --%>
 
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<spring:eval var="osfUrl" expression="@casProperties.getProperty('osf.url')"/>
-<c:redirect url="${osfUrl}?login_not_available=true"/>
+<jsp:directive.include file="includes/top.jsp"/>
+
+<div id="msg" class="errors">
+    <h2><spring:message code="screen.login.availability.heading"/></h2>
+    <p><spring:message code="screen.login.availability.message"/></p>
+</div>
+
+<spring:message code="screen.osf.login.message.error" var="errorDescription"/>
+<script>
+    description = document.getElementById("description");
+    if (description != null) {
+        description.innerHTML = "<br><br>${errorDescription}";
+    }
+</script>
+
+<c:set var="linkSignIn" value="false"/>
+<c:set var="linkSignOut" value="false"/>
+<c:set var="linkCreateAccount" value="false"/>
+<c:set var="linkBackToOsf" value="true"/>
+
+<jsp:directive.include file="includes/bottom.jsp"/>
