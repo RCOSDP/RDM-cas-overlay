@@ -3,15 +3,12 @@ package io.cos.cas.mock;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import org.apache.http.HttpStatus;
 import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.entity.BasicHttpEntity;
 import org.jasig.cas.CentralAuthenticationService;
 import org.json.JSONObject;
 import org.mockito.Mockito;
-import org.springframework.util.StringUtils;
 
 import io.cos.cas.AbstractTestUtils;
 import io.cos.cas.authentication.OpenScienceFrameworkCredential;
@@ -24,12 +21,12 @@ import io.cos.cas.authentication.OpenScienceFrameworkCredential;
 public class MockNormalizeRemotePrincipalWithEntitlement extends MockNormalizeRemotePrincipal {
 
     private boolean isSingleEntitlement;
-    private String loginAvailability;
+    private boolean isLoginAvailability;
 
     public MockNormalizeRemotePrincipalWithEntitlement(final CentralAuthenticationService centralAuthenticationService) {
         super(centralAuthenticationService);
         this.isSingleEntitlement = false;
-        this.loginAvailability = "";
+        this.isLoginAvailability = false;
     }
 
     @Override
@@ -41,7 +38,7 @@ public class MockNormalizeRemotePrincipalWithEntitlement extends MockNormalizeRe
         user.put("fullname", AbstractTestUtils.CONST_DISPLAY_NAME);
 
         if (isSingleEntitlement) {
-            user.put("eduPersonEntitlement", AbstractTestUtils.CONST_SINGLE_ENTITLEMENT_INPUT);
+            user.put("entitlement", AbstractTestUtils.CONST_SINGLE_ENTITLEMENT_INPUT);
         }
 
         provider.put("id", credential.getInstitutionId());
@@ -52,18 +49,13 @@ public class MockNormalizeRemotePrincipalWithEntitlement extends MockNormalizeRe
 
     protected HttpResponse callLoginAvailabilityAPI(final JSONObject bodyObj) throws IOException, ClientProtocolException {
         final HttpResponse mockedResponse = Mockito.mock(HttpResponse.class);
-        final StatusLine statusLine = Mockito.mock(StatusLine.class);
         final BasicHttpEntity entity = new BasicHttpEntity();
-        String bodyResponse = "{\"meta\":{\"version\":\"2.0\"}}";
-        if (StringUtils.hasText(this.loginAvailability)) {
-            bodyResponse = "{\"login_availability\":\"" + this.loginAvailability + "\",\"meta\":{\"version\":\"2.0\"}}";
-            Mockito.when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_OK);
-        } else {
-            Mockito.when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_FORBIDDEN);
+        String bodyResponse = "{\"login_availability\":false,\"meta\":{\"version\":\"2.0\"}}";
+        if (this.isLoginAvailability) {
+            bodyResponse = "{\"login_availability\":true,\"meta\":{\"version\":\"2.0\"}}";
         }
 
         entity.setContent(new ByteArrayInputStream(bodyResponse.getBytes()));
-        Mockito.when(mockedResponse.getStatusLine()).thenReturn(statusLine);
         Mockito.when(mockedResponse.getEntity()).thenReturn(entity);
         return mockedResponse;
     }
@@ -72,8 +64,8 @@ public class MockNormalizeRemotePrincipalWithEntitlement extends MockNormalizeRe
         this.isSingleEntitlement = isSingleEntitlement;
     }
 
-    public void setLoginAvailability(final String loginAvailability) {
-        this.loginAvailability = loginAvailability;
+    public void setLoginAvailability(final boolean isLoginAvailability) {
+        this.isLoginAvailability = isLoginAvailability;
     }
 
 }
