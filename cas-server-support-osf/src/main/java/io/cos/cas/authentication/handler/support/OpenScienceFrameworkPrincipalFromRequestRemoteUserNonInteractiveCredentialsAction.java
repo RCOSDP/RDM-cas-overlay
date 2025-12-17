@@ -370,6 +370,8 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
 
             // Retrieve all attributes from the Shibboleth request headers.
             for (final String headerName : Collections.list(request.getHeaderNames())) {
+                logger.info("[SAML Shibboleth] Found header: '{}'", headerName);
+                logger.info("[SAML Shibboleth] Header value: '{}'", request.getHeader(headerName));
                 if (headerName.startsWith(ATTRIBUTE_PREFIX)) {
                     final String headerValue = request.getHeader(headerName);
                     logger.debug(
@@ -454,6 +456,8 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
             credential.getDelegationAttributes().put("Cas-Identity-Provider", clientName);
             if (principal.getAttributes().size() > 0) {
                 for (final Map.Entry<String, Object> entry : principal.getAttributes().entrySet()) {
+                    logger.info("[PAC4J Delegation] Found attribute: '{}'", entry.getKey());
+                    logger.info("[PAC4J Delegation] Attribute value: '{}'", entry.getValue());
                     logger.debug(
                             "[CAS PAC4J] User's institutional identity '{}': '{}' with attribute '{}': '{}'",
                             clientName,
