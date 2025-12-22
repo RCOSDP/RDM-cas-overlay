@@ -384,6 +384,12 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
                             headerName.substring(ATTRIBUTE_PREFIX.length()),
                             headerValue
                     );
+                    logger.info(
+                            "[SAML Shibboleth] Delegation attribute map updated: '{}', '{}', '{}'",
+                            remoteUser,
+                            headerName.substring(ATTRIBUTE_PREFIX.length()),
+                            headerValue
+                    );
                 }
             }
 
@@ -619,6 +625,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
         }
 
         final String payload = normalizedPayload.toString();
+        logger.info("[CAS XSLT] Normalized payload: {}", payload);
         logger.info("[CAS XSLT] All attributes checked: username={}, institution={}", username, institutionId);
         logger.debug(
                 "[CAS XSLT] All attributes checked: username={}, institution={}, normalizedPayload={}",
@@ -746,6 +753,11 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
 
         // Add delegated attributes to the transformation
         for (final String key : credential.getDelegationAttributes().keySet()) {
+            logger.info(
+                    "[CAS XSLT] Delegation attribute for normalization: '{}', '{}'",
+                    key,
+                    credential.getDelegationAttributes().get(key)
+            );
             final Element attribute = document.createElement("attribute");
             attribute.setAttribute("name", key);
             attribute.setAttribute("value", credential.getDelegationAttributes().get(key));
@@ -759,6 +771,8 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
         this.institutionsAuthTransformer.transform(source, result);
 
         // convert transformed xml to json
+        logger.info("[CAS XSLT] Transformed XML: {}", writer.getBuffer().toString());
+        logger.info("[CAS XSLT] Converting XML to JSON: {}", XML.toJSONObject(writer.getBuffer().toString()));
         return XML.toJSONObject(writer.getBuffer().toString());
     }
 
