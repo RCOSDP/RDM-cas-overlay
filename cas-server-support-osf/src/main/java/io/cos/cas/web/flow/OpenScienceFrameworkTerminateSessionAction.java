@@ -91,11 +91,9 @@ public class OpenScienceFrameworkTerminateSessionAction {
         String institutionId = null;
         Boolean remotePrincipal = Boolean.FALSE;
 
-        final HttpServletRequest request = WebUtils.getHttpServletRequest(context);
-        final String serviceUrl = request.getParameter("service");
-        logger.info("[serviceUrl] Param: '{}'", serviceUrl);
         // for logout, we need to get the cookie's value
         if (tgtId == null) {
+            final HttpServletRequest request = WebUtils.getHttpServletRequest(context);
             tgtId = this.ticketGrantingTicketCookieGenerator.retrieveCookieValue(request);
         }
         // for institution logout, get the institutionId stored in TGT
@@ -124,14 +122,9 @@ public class OpenScienceFrameworkTerminateSessionAction {
         this.ticketGrantingTicketCookieGenerator.removeCookie(response);
         this.warnCookieGenerator.removeCookie(response);
 
-        final String institutionLogoutUrl;
         // if logged in through institutions, redirect to institution logout endpoint
         if (remotePrincipal && institutionId != null) {
-            if (serviceUrl != null) {
-                institutionLogoutUrl = serviceUrl;
-            } else {
-                institutionLogoutUrl = institutionHandler.findInstitutionLogoutUrlById(institutionId);
-            }
+            final String institutionLogoutUrl = institutionHandler.findInstitutionLogoutUrlById(institutionId);
             if (institutionLogoutUrl == null) {
                 logger.warn("Institution {} does not have a dedicated logout url, use default logout redirection instead", institutionId);
             } else {
@@ -139,9 +132,6 @@ public class OpenScienceFrameworkTerminateSessionAction {
                 // return `finish` event to prevent `logoutRedirectUrl` being overwritten
                 return new Event(this, "finish");
             }
-        } else if (serviceUrl != null) {
-            context.getFlowScope().put("logoutRedirectUrl", serviceUrl);
-            return new Event(this, "finish");
         }
 
         return this.eventFactorySupport.success(this);

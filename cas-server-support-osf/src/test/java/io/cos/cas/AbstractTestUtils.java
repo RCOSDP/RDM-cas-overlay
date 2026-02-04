@@ -45,8 +45,6 @@ public abstract class AbstractTestUtils {
 
     public static final String[] CONST_SINGLE_ENTITLEMENTS_OUTPUT = {"value1-1", "value1-2", "value1-3"};
 
-    public static final String CONST_JSON_STRING = "{\"key1-1\":\"value1-1\"}";
-
     private static final String REMOTE_USER = "REMOTE_USER";
 
     private static final String ATTRIBUTE_PREFIX = "AUTH-";
