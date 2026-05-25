@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.security.auth.login.AccountException;
@@ -300,5 +301,74 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
         osfRemoteAuthenticate
                 .setInstitutionsLoginAvailabilityUrl(AbstractTestUtils.CONST_INSTITUTION_LOGIN_AVAILABILITY_URL);
         osfRemoteAuthenticate.notifyRemotePrincipalAuthenticated(osfCredential);
+    }
+
+    /**
+     * Verifies that a Shibboleth (SAML) authentication flow correctly handles an {@code AUTH-} prefixed request header
+     * whose value is {@code null}.
+     */
+    @Test
+    public void verifyInstitutionSamlShibbolethFlowWithNullHeaderValue() throws Exception {
+
+        // The name of the AUTH- prefixed header whose value will be forced to null.
+        final String nullAttributeHeaderName = "AUTH-NullAttribute";
+        final String nullAttributeKey = "NullAttribute"; // stripped prefix
+
+        // Build a MockHttpServletRequest that reports nullAttributeHeaderName in getHeaderNames() but
+        // returns null from getHeader() for that specific header, triggering the null-branch in the loop.
+        final MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest() {
+            @Override
+            public String getHeader(final String name) {
+                if (nullAttributeHeaderName.equalsIgnoreCase(name)) {
+                    return null;
+                }
+                return super.getHeader(name);
+            }
+
+            @Override
+            public Enumeration<String> getHeaderNames() {
+                final List<String> names = new ArrayList<>(Collections.list(super.getHeaderNames()));
+                if (!names.contains(nullAttributeHeaderName)) {
+                    names.add(nullAttributeHeaderName);
+                }
+                return Collections.enumeration(names);
+            }
+        };
+
+        // Add standard Shibboleth headers so the SAML Shibboleth branch is entered.
+        mockHttpServletRequest.addHeader("AUTH-Shib-Session-ID", AbstractTestUtils.CONST_NOT_EMPTY_STRING);
+        mockHttpServletRequest.addHeader("REMOTE_USER", AbstractTestUtils.CONST_NOT_EMPTY_STRING);
+        mockHttpServletRequest.addHeader("AUTH-Shib-Identity-Provider", AbstractTestUtils.CONST_INSTITUTION_IDP);
+        mockHttpServletRequest.addHeader("AUTH-displayName", AbstractTestUtils.CONST_DISPLAY_NAME);
+        mockHttpServletRequest.addHeader("AUTH-givenName", "James");
+        mockHttpServletRequest.addHeader("AUTH-familyName", "Steward");
+        mockHttpServletRequest.addHeader("AUTH-mail", AbstractTestUtils.CONST_MAIL);
+
+        final MockRequestContext mockContext = AbstractTestUtils.getContextWithCredentials(mockHttpServletRequest);
+
+        final CentralAuthenticationService centralAuthenticationService = mock(CentralAuthenticationService.class);
+        final MockNotifyRemotePrincipalAuthenticated osfRemoteAuthenticate
+                = new MockNotifyRemotePrincipalAuthenticated(centralAuthenticationService);
+
+        final Event event = osfRemoteAuthenticate.doExecute(mockContext);
+
+        final OpenScienceFrameworkCredential credential
+                = (OpenScienceFrameworkCredential) mockContext.getFlowScope().get(AbstractTestUtils.CONST_CREDENTIAL);
+
+        // The flow must still complete successfully.
+        assertEquals("success", event.getId());
+        assertTrue(credential.isRemotePrincipal());
+        assertEquals(DelegationProtocol.SAML_SHIB, credential.getDelegationProtocol());
+
+        // The null-valued AUTH- header must appear in delegationAttributes with a null value,
+        // confirming that the `if (headerValue == null) { decodedValue = headerValue; }` branch was taken.
+        assertTrue(
+                "delegationAttributes must contain the key for the null-valued header",
+                credential.getDelegationAttributes().containsKey(nullAttributeKey)
+        );
+        assertNull(
+                "delegationAttributes value for the null-valued header must be null",
+                credential.getDelegationAttributes().get(nullAttributeKey)
+        );
     }
 }
