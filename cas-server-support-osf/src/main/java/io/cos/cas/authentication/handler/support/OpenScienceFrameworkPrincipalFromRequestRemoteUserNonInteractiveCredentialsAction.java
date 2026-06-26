@@ -345,7 +345,7 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
             // Remove the Shibboleth cookie since: 1) we can not rely on the Shibboleth server to remove this cookie,
             // which only works for normal web flow; and 2) CAS takes over after successful SAML authentication and the
             // cookie is no longer needed anyway.
-            removeShibbolethSessionCookie(context);
+            // removeShibbolethSessionCookie(context);
 
             // The header "REMOTE_USER" is still REQUIRED as an identifier for institution users although: 1) OSF only
             // relies on `username` (email) for identification purpose; and 2) `notifyRemotePrincipalAuthenticated()`
