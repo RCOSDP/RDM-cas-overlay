@@ -372,15 +372,25 @@ public class OpenScienceFrameworkPrincipalFromRequestRemoteUserNonInteractiveCre
             for (final String headerName : Collections.list(request.getHeaderNames())) {
                 if (headerName.startsWith(ATTRIBUTE_PREFIX)) {
                     final String headerValue = request.getHeader(headerName);
+                    String decodedValue;
+                    if (headerValue == null) {
+                        decodedValue = headerValue;
+                    } else {
+                        try {
+                            decodedValue = new String(headerValue.getBytes("ISO-8859-1"), "UTF-8");
+                        } catch (final java.io.UnsupportedEncodingException e) {
+                            decodedValue = headerValue; // UTF-8 is always supported, this never happens
+                        }
+                    }
                     logger.debug(
                             "[SAML Shibboleth] User's institutional identity '{}' - auth header '{}': '{}'",
                             remoteUser,
                             headerName,
-                            headerValue
+                            decodedValue
                     );
                     credential.getDelegationAttributes().put(
                             headerName.substring(ATTRIBUTE_PREFIX.length()),
-                            headerValue
+                            decodedValue
                     );
                 }
             }
